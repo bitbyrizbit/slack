@@ -62,7 +62,7 @@ def get_trip(trip_id: UUID):
     return trip
 
 @router.patch('/trips/{trip_id}', response_model=Trip)
-def update_trip(trip_id: UUID, trip_in: TripUpdateInput, current_user: dict=Depends(get_current_user)):
+def update_trip(trip_id: UUID, trip_in: TripCreate, current_user: dict=Depends(get_current_user)):
     """Update trip details (e.g. name). Must have mutation permissions."""
     verify_trip_mutation_permission(trip_id, current_user)
     updated = db_update_trip_name(trip_id, trip_in.name)

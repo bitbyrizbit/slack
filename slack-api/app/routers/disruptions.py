@@ -15,6 +15,8 @@ from app.heuristics import suggest_dependencies_for_booking
 from app.models import AcceptInviteRequest, AcceptInviteResponse, ActivityFeedItem, ActivityFeedListResponse, AuthResponse, Booking, BookingCreate, BookingUpdate, BookingWithSuggestions, Dependency, DependencyCreate, DependencyUpdate, Disruption, DisruptionCreate, DisruptionResolveResponse, GraphResponse, PresenceUser, RecoveryApplyResponse, RecoveryCandidate, RecoveryOptionsResponse, RippleResponse, RoleType, SuggestedDependency, ThinConnection, Trip, TripCreate, TripMember, TripMemberInviteRequest, TripMemberInviteResponse, TripPresenceResponse, TripResilienceResponse, UserCreate, UserLogin
 from app.ripple import compute_effective_bookings, compute_ripple_impact
 from app.recovery import generate_raw_recovery_candidates, enrich_with_groq_or_fallback
+from app.routers.trips import verify_trip_mutation_permission
+from app.routers.core import log_activity_and_broadcast, SampleDisruptionRequest, LiveWeatherDisruptionRequest
 router = APIRouter()
 @router.post('/trips/{trip_id}/disruptions', response_model=RippleResponse, status_code=status.HTTP_201_CREATED)
 def trigger_disruption(trip_id: UUID, disruption_in: DisruptionCreate, current_user: dict=Depends(get_current_user)):
