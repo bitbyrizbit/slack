@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     debug: bool = False
     database_url: str = "postgresql://postgres@localhost:5432/slack_db"
     tight_threshold_minutes: int = 30
-    cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000", "https://slack-sand-nu.vercel.app"]
 
     # JWT auth settings
     jwt_secret: str = "dev-secret-change-in-prod"

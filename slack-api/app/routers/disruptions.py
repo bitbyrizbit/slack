@@ -8,6 +8,7 @@ from fastapi.responses import StreamingResponse
 from app.auth import create_jwt, get_current_user, get_current_user_optional, hash_password, verify_password
 from app.demo import seed_standard_demo_trip, seed_stress_test_trip, fetch_live_airport_weather, AIRPORT_COORDINATES
 from app.database import db_accept_invite, db_add_activity_log, db_add_trip_member, db_apply_recovery, db_create_booking, db_create_dependency, db_create_disruption, db_create_trip, db_create_user, db_delete_booking, db_delete_dependency, db_get_booking, db_get_dependency, db_get_disruption, db_get_invite_by_token, db_get_member_role, db_get_recovery_candidate, db_get_recovery_candidates_by_disruption, db_get_trip, db_get_trip_member, db_get_user_by_email_with_hash, db_get_user_role_for_trip, db_list_active_disruptions, db_list_activity_feed, db_list_bookings, db_list_dependencies, db_list_trip_members, db_list_trips, db_list_trips_for_user, db_remove_trip_member, db_resolve_disruption, db_save_recovery_candidates, db_update_booking, db_update_dependency, db_update_trip_name, db_delete_trip
+from app.db.disruptions import db_list_resolved_disruptions
 from app.events import event_bus
 from app.graph import build_trip_graph
 from app.heuristics import suggest_dependencies_for_booking
@@ -158,12 +159,15 @@ async def trigger_live_weather_disruption_endpoint(trip_id: UUID, req: LiveWeath
     if not target_booking:
         target_booking = next((b for b in bookings if b.type == 'flight'), bookings[0])
     delay_mins = weather_info['suggested_delay_minutes']
-    desc = f"Live Weather Disruption ({weather_info['airport_name']}): {weather_info['weather_description']}, {weather_info['temperature_c']}Â°C, wind {weather_info['wind_speed_kmh']} km/h (gusts {weather_info['wind_gusts_kmh']} km/h). Ground stop delay: {delay_mins}m."
+    desc = f"Live Weather Disruption ({weather_info['airport_name']}): {weather_info['weather_description']}, {weather_info['temperature_c']}-¦C, wind {weather_info['wind_speed_kmh']} km/h (gusts {weather_info['wind_gusts_kmh']} km/h). Ground stop delay: {delay_mins}m."
     disruption_in = DisruptionCreate(booking_id=target_booking.id, disruption_type='weather', delay_minutes=delay_mins, description=desc)
-    return trigger_disruption(trip_id, disruption_in, current_user)@router.get('/{trip_id}/disruptions/resolved', response_model=List[Disruption])
+    return trigger_disruption(trip_id, disruption_in, current_user)
+
+
+@router.get('/trips/{trip_id}/disruptions/resolved', response_model=List[Disruption])
 def list_resolved_disruptions(trip_id: UUID, current_user: dict = Depends(get_current_user)):
     trip = db_get_trip(trip_id)
     if not trip:
         raise HTTPException(status_code=404, detail='Trip not found')
     return db_list_resolved_disruptions(trip_id)
-from app.db.disruptions import db_list_resolved_disruptions
+
