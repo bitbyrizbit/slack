@@ -31,7 +31,8 @@ import {
 } from "./types";
 import { getAuthHeaders, setAuth, clearAuth } from "./auth";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const RAW_API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = RAW_API.replace(/\/+$/, "");
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
