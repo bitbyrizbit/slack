@@ -36,8 +36,8 @@ export default function LandingPage() {
   const handleLoadDemo = async () => {
     setIsDemoLoading(true);
     try {
-      const trip = await seedDemoTrip();
-      router.push(`/trips/${trip.id}`);
+      const res = await seedDemoTrip();
+      router.push(`/trips/${res.trip.id}`);
     } catch (err) {
       console.error(err);
       alert("Failed to load demo trip");
