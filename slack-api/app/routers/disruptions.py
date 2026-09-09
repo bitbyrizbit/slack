@@ -1,4 +1,4 @@
-import asyncio
+ï»¿import asyncio
 import json
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID, uuid4
@@ -161,7 +161,7 @@ async def trigger_live_weather_disruption_endpoint(trip_id: UUID, req: LiveWeath
     if not target_booking:
         target_booking = next((b for b in bookings if b.type == 'flight'), bookings[0])
     delay_mins = weather_info['suggested_delay_minutes']
-    desc = f"Live Weather Disruption ({weather_info['airport_name']}): {weather_info['weather_description']}, {weather_info['temperature_c']}-¦C, wind {weather_info['wind_speed_kmh']} km/h (gusts {weather_info['wind_gusts_kmh']} km/h). Ground stop delay: {delay_mins}m."
+    desc = f"Live Weather Disruption ({weather_info['airport_name']}): {weather_info['weather_description']}, {weather_info['temperature_c']} deg C, wind {weather_info['wind_speed_kmh']} km/h (gusts {weather_info['wind_gusts_kmh']} km/h). Ground stop delay: {delay_mins}m."
     disruption_in = DisruptionCreate(booking_id=target_booking.id, disruption_type='weather', delay_minutes=delay_mins, description=desc)
     return trigger_disruption(trip_id, disruption_in, current_user)
 
