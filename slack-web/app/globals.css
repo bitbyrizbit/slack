@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #141210;
-  --foreground: #EDEAE5;
-  --card: #1E1B18;
-  --card-foreground: #EDEAE5;
-  --border: #2E2B28;
-  --border-strong: #48443F;
-  --muted: #282420;
-  --muted-foreground: #918B84;
-  --accent: #D97040;
+  --background: #FFFFFF;
+  --foreground: #111111;
+  --card: #F7F7F7;
+  --card-foreground: #111111;
+  --border: #E0E0E0;
+  --border-strong: #BBBBBB;
+  --muted: #F2F2F2;
+  --muted-foreground: #666666;
+  --accent: #C05621;
 
   --font-heading: var(--font-lora), "Georgia", "Cambria", "Times New Roman", serif;
   --font-body: var(--font-jakarta), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
