@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import AirplaneBg from "@/components/AirplaneBg";
 import {
   Compass,
   Mail,
@@ -40,8 +41,8 @@ const DEMO_ACCOUNTS: DemoAccount[] = [
   {
     roleKey: "owner",
     label: "Aisha",
-    roleBadge: "OWNER / ADMIN",
-    sublabel: "Full authority: create, edit, delete & resolve disruptions",
+    roleBadge: "Owner",
+    sublabel: "Full access to organize and refine journeys",
     email: "owner@demo.com",
     password: "demo1234",
     badgeBg: "bg-purple-100 text-purple-800 border-purple-200",
@@ -53,8 +54,8 @@ const DEMO_ACCOUNTS: DemoAccount[] = [
   {
     roleKey: "editor",
     label: "Charlie",
-    roleBadge: "EDITOR",
-    sublabel: "Can modify itineraries and trigger live delays",
+    roleBadge: "Editor",
+    sublabel: "Help plan and adjust schedules smoothly",
     email: "editor@demo.com",
     password: "demo1234",
     badgeBg: "bg-emerald-100 text-emerald-800 border-emerald-200",
@@ -66,8 +67,8 @@ const DEMO_ACCOUNTS: DemoAccount[] = [
   {
     roleKey: "viewer",
     label: "Bob",
-    roleBadge: "VIEWER (READ-ONLY)",
-    sublabel: "Strict read-only: mutations rejected server-side",
+    roleBadge: "Viewer",
+    sublabel: "Perfect for guests to follow along safely",
     email: "viewer@demo.com",
     password: "demo1234",
     badgeBg: "bg-amber-100 text-amber-800 border-amber-200",
@@ -131,267 +132,105 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#FBFBFA] flex flex-col items-center justify-center px-4 py-10 sm:px-6">
-      {/* Background subtle graph grid */}
-      <div
-        className="fixed inset-0 pointer-events-none opacity-[0.035]"
-        style={{
-          backgroundImage: "radial-gradient(#111111 1px, transparent 1px)",
-          backgroundSize: "24px 24px"
-        }}
-      />
+    <main className="relative min-h-screen bg-[var(--background)] flex flex-col items-center justify-center px-4 overflow-hidden">
+      <AirplaneBg />
 
-      <div className="relative w-full max-w-4xl">
-        {/* Header Branding */}
-        <div className="text-center mb-8">
+      <div className="relative z-10 w-full max-w-[500px] aspect-square flex flex-col items-center justify-center p-8 sm:p-12 rounded-full bg-[var(--card)] border border-[var(--border-strong)] shadow-[0_0_80px_rgba(0,0,0,0.8)]">
+        <div className="w-full max-w-[320px] mx-auto text-center flex flex-col items-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white border border-[#E5E0D8] shadow-xs hover:border-[#111111] transition-all group mb-4"
+            className="flex items-center gap-2 transform -rotate-3 relative overflow-hidden shadow-sm mb-6 inline-flex"
           >
-            <div className="w-6 h-6 rounded-md bg-[#111111] text-white flex items-center justify-center text-xs">
-              <Compass className="w-3.5 h-3.5 group-hover:rotate-45 transition-transform duration-300" />
+            <div className="absolute inset-0 flex">
+              <div className="w-1/2 bg-[#18181A] h-full"></div>
+              <div className="w-1/2 bg-[var(--accent)] h-full"></div>
             </div>
-            <span className="font-semibold text-sm text-[#111111] tracking-tight">
-              Slack Engine
-            </span>
-            <span className="text-[11px] font-mono text-[#78716C] border-l border-[#E5E0D8] pl-2">
-              DAG v1.0
+            <span className="relative font-[family-name:var(--font-signature)] text-3xl font-normal text-[var(--foreground)] z-10 px-4 py-1 pb-2">
+              Slack
             </span>
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#111111]">
-            Disruption Recovery Control Center
-          </h1>
-          <p className="mt-2 text-sm text-[#666660] max-w-md mx-auto">
-            Travel itineraries modeled as Directed Acyclic Graphs with automated edge slack recalculation.
+
+          <h2 className="text-2xl font-serif-heading font-normal text-[var(--foreground)] mb-1">
+            Welcome Back
+          </h2>
+          <p className="text-xs text-[var(--muted-foreground)] font-light mb-6">
+            Enter your credentials or select a demo role
           </p>
-        </div>
 
-        {/* Master Card with Dual Layout */}
-        <div className="bg-white rounded-2xl border border-[#E5E0D8] shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12">
+          {error && (
+            <div className="mb-4 p-2 rounded-lg bg-red-900/30 border border-red-500/50 text-red-200 text-[10px] w-full text-center">
+              {error}
+            </div>
+          )}
 
-            {/* Left Column: Quick Evaluation / Demo Profiles (5 cols) */}
-            <div className="lg:col-span-5 bg-[#F9F8F6] p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-[#E5E0D8] flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#111111] uppercase tracking-wider">
-                    <Sparkles className="w-3.5 h-3.5 text-[#C05621]" />
-                    <span>Judge / Demo Mode</span>
-                  </div>
-                  <span className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-[#E5E0D8] text-[#78716C]">
-                    1-CLICK ACCESS
-                  </span>
-                </div>
-
-                <p className="text-xs text-[#78716C] mb-5 leading-relaxed">
-                  Instant login to real, pre-seeded accounts. Each identity holds an isolated JWT with enforced server-side RBAC permissions.
-                </p>
-
-                {/* Persona Cards */}
-                <div className="space-y-3">
-                  {DEMO_ACCOUNTS.map((account) => {
-                    const isCurrentLoading = demoLoading === account.email;
-                    const IconComponent = account.Icon;
-
-                    return (
-                      <div
-                        key={account.email}
-                        className={`group relative rounded-xl border border-[#E5E0D8] bg-white p-3.5 transition-all duration-200 shadow-2xs ${account.borderHover}`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className={`w-9 h-9 rounded-lg ${account.iconBg} flex items-center justify-center shrink-0 shadow-xs`}>
-                            <IconComponent className="w-4 h-4" />
-                          </div>
-
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-1 mb-0.5">
-                              <span className="text-sm font-semibold text-[#111111] truncate">
-                                {account.label}
-                              </span>
-                              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${account.badgeBg}`}>
-                                {account.roleBadge}
-                              </span>
-                            </div>
-                            <p className="text-xs text-[#78716C] line-clamp-1 mb-2.5">
-                              {account.sublabel}
-                            </p>
-
-                            <div className="flex items-center gap-2">
-                              {/* 1-Click Instant Login Button */}
-                              <button
-                                id={`demo-login-${account.roleKey}`}
-                                type="button"
-                                onClick={() => handleDemoLogin(account)}
-                                disabled={demoLoading !== null || loading}
-                                className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#111111] text-white text-xs font-medium hover:bg-[#2C2926] active:scale-[0.98] disabled:opacity-50 transition-all shadow-2xs"
-                              >
-                                {isCurrentLoading ? (
-                                  <>
-                                    <Loader2 className="w-3 h-3 animate-spin" />
-                                    <span>Entering…</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <span>Sign in as {account.label}</span>
-                                    <ArrowRight className="w-3 h-3" />
-                                  </>
-                                )}
-                              </button>
-
-                              {/* Autofill quick button */}
-                              <button
-                                type="button"
-                                onClick={() => handleAutofill(account)}
-                                title="Autofill credentials into the form"
-                                className="px-2 py-1.5 rounded-lg border border-[#E5E0D8] text-[11px] font-medium text-[#78716C] hover:text-[#111111] hover:bg-[#F2EFE9] transition-colors"
-                              >
-                                Autofill
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+          <form onSubmit={handleSubmit} className="space-y-4 w-full">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--muted-foreground)]">
+                <Mail className="w-4 h-4" />
               </div>
-
-              {/* RBAC Security Note */}
-              <div className="mt-6 pt-4 border-t border-[#E5E0D8]/80 flex items-center gap-2 text-[11px] text-[#78716C]">
-                <ShieldCheck className="w-4 h-4 text-[#059669] shrink-0" />
-                <span> Viewers cannot mutate nodes even with forged headers.</span>
-              </div>
+              <input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email Address"
+                className="w-full pl-9 pr-3.5 py-2.5 rounded-full border border-[var(--border-strong)] bg-[#1D1F21] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] transition-all"
+              />
             </div>
 
-            {/* Right Column: Standard Credentials Login (7 cols) */}
-            <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center">
-              <div className="max-w-md mx-auto w-full">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold tracking-tight text-[#111111]">
-                    Sign In
-                  </h2>
-                  <p className="text-xs text-[#78716C] mt-1">
-                    Enter your workspace credentials or click an evaluator profile on the left.
-                  </p>
-                </div>
-
-                {error && (
-                  <div className="mb-5 p-3 rounded-xl bg-red-50/80 border border-red-200 text-red-700 text-xs flex items-start gap-2.5 animate-in fade-in duration-200">
-                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-600" />
-                    <span className="flex-1 leading-relaxed font-medium">{error}</span>
-                  </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-xs font-semibold text-[#3A3630] uppercase tracking-wider mb-1.5"
-                    >
-                      Email Address
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#A8A29E]">
-                        <Mail className="w-4 h-4" />
-                      </div>
-                      <input
-                        id="email"
-                        type="email"
-                        autoComplete="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@example.com or owner@demo.com"
-                        className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#D5CEC5] bg-[#FDFCF9] text-sm text-[#111111] placeholder:text-[#B0AAA2] focus:outline-none focus:ring-2 focus:ring-[#111111]/15 focus:border-[#111111] transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <label
-                        htmlFor="password"
-                        className="block text-xs font-semibold text-[#3A3630] uppercase tracking-wider"
-                      >
-                        Password
-                      </label>
-                    </div>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#A8A29E]">
-                        <Lock className="w-4 h-4" />
-                      </div>
-                      <input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        autoComplete="current-password"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-[#D5CEC5] bg-[#FDFCF9] text-sm text-[#111111] placeholder:text-[#B0AAA2] focus:outline-none focus:ring-2 focus:ring-[#111111]/15 focus:border-[#111111] transition-all"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#A8A29E] hover:text-[#111111] transition-colors"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={loading || demoLoading !== null}
-                    className="w-full py-2.5 px-4 rounded-xl bg-[#111111] text-white font-medium text-sm hover:bg-[#2C2926] active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-[#111111]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs flex items-center justify-center gap-2 mt-2"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Authenticating…</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Sign In to Workspace</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
-                </form>
-
-                <div className="mt-6 pt-5 border-t border-[#E5E0D8] flex items-center justify-between text-xs text-[#78716C]">
-                  <span>Don&apos;t have an account?</span>
-                  <Link
-                    href="/signup"
-                    className="font-semibold text-[#111111] underline underline-offset-4 hover:text-[#C05621] transition-colors"
-                  >
-                    Create an account →
-                  </Link>
-                </div>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--muted-foreground)]">
+                <Lock className="w-4 h-4" />
               </div>
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                className="w-full pl-9 pr-10 py-2.5 rounded-full border border-[var(--border-strong)] bg-[#1D1F21] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
 
-          </div>
-        </div>
+            <button
+              type="submit"
+              disabled={loading || demoLoading !== null}
+              className="w-full py-2.5 px-4 rounded-full bg-[var(--accent)] text-[#18181A] font-semibold text-sm hover:bg-[#D5B98A] transition-all flex items-center justify-center gap-2"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Sign In</span>}
+            </button>
+          </form>
 
-        {/* Footer Info */}
-        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#8C827A] px-2">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>SQLite Graph Engine • Live WebSocket Active</span>
+          <div className="mt-4 pt-4 border-t border-[var(--border)] w-full">
+            <p className="text-[10px] text-[var(--muted-foreground)] mb-2">Quick Demo Access</p>
+            <div className="flex justify-center gap-2">
+              {DEMO_ACCOUNTS.map((account) => (
+                <button
+                  key={account.roleKey}
+                  type="button"
+                  onClick={() => handleDemoLogin(account)}
+                  disabled={demoLoading !== null || loading}
+                  className="px-3 py-1.5 rounded-full border border-[var(--border-strong)] text-[10px] text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors"
+                >
+                  {demoLoading === account.email ? <Loader2 className="w-3 h-3 animate-spin inline" /> : account.label}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            <Link href="/" className="hover:text-[#111111] transition-colors">
-              Engine Home
-            </Link>
-            <span>•</span>
-            <Link href="/signup" className="hover:text-[#111111] transition-colors">
-              Register New Workspace
+
+          <div className="mt-6 text-[11px] text-[var(--muted-foreground)]">
+            Don't have an account?{" "}
+            <Link href="/signup" className="text-[var(--accent)] hover:underline">
+              Create one
             </Link>
           </div>
         </div>

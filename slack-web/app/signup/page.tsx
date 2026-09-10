@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import AirplaneBg from "@/components/AirplaneBg";
 import {
   Compass,
   User,
@@ -57,175 +58,106 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#FBFBFA] flex flex-col items-center justify-center px-4 py-10 sm:px-6">
-      {/* Background subtle graph grid */}
-      <div
-        className="fixed inset-0 pointer-events-none opacity-[0.035]"
-        style={{
-          backgroundImage: "radial-gradient(#111111 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-        }}
-      />
+    <main className="relative min-h-screen bg-[var(--background)] flex flex-col items-center justify-center px-4 overflow-hidden">
+      <AirplaneBg />
 
-      <div className="relative w-full max-w-md">
-        {/* Header Branding */}
-        <div className="text-center mb-8">
+      <div className="relative z-10 w-full max-w-[500px] aspect-square flex flex-col items-center justify-center p-8 sm:p-12 rounded-full bg-[var(--card)] border border-[var(--border-strong)] shadow-[0_0_80px_rgba(0,0,0,0.8)]">
+        <div className="w-full max-w-[320px] mx-auto text-center flex flex-col items-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white border border-[#E5E0D8] shadow-xs hover:border-[#111111] transition-all group mb-4"
+            className="flex items-center gap-2 transform -rotate-3 relative overflow-hidden shadow-sm mb-4 inline-flex"
           >
-            <div className="w-6 h-6 rounded-md bg-[#111111] text-white flex items-center justify-center text-xs">
-              <Compass className="w-3.5 h-3.5 group-hover:rotate-45 transition-transform duration-300" />
+            <div className="absolute inset-0 flex">
+              <div className="w-1/2 bg-[#18181A] h-full"></div>
+              <div className="w-1/2 bg-[var(--accent)] h-full"></div>
             </div>
-            <span className="font-semibold text-sm text-[#111111] tracking-tight">
-              Slack Engine
-            </span>
-            <span className="text-[11px] font-mono text-[#78716C] border-l border-[#E5E0D8] pl-2">
-              DAG v1.0
+            <span className="relative font-[family-name:var(--font-signature)] text-3xl font-normal text-[var(--foreground)] z-10 px-4 py-1 pb-2">
+              Slack
             </span>
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#111111]">
-            Create Workspace Account
-          </h1>
-          <p className="mt-2 text-sm text-[#666660]">
-            Deploy automated recovery plans for flight & travel delays.
-          </p>
-        </div>
 
-        {/* Card */}
-        <div className="bg-white rounded-2xl border border-[#E5E0D8] shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] p-7 sm:p-8">
+          <h2 className="text-xl font-serif-heading font-normal text-[var(--foreground)] mb-1">
+            Create Account
+          </h2>
+          <p className="text-[10px] text-[var(--muted-foreground)] font-light mb-4">
+            Start your seamless journey
+          </p>
+
           {error && (
-            <div className="mb-5 p-3 rounded-xl bg-red-50/80 border border-red-200 text-red-700 text-xs flex items-start gap-2.5 animate-in fade-in duration-200">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-600" />
-              <span className="flex-1 leading-relaxed font-medium">{error}</span>
+            <div className="mb-3 p-2 rounded-lg bg-red-900/30 border border-red-500/50 text-red-200 text-[10px] w-full text-center">
+              {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label
-                htmlFor="displayName"
-                className="block text-xs font-semibold text-[#3A3630] uppercase tracking-wider mb-1.5"
-              >
-                Full Name
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#A8A29E]">
-                  <User className="w-4 h-4" />
-                </div>
-                <input
-                  id="displayName"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="e.g. Alex Rivera"
-                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#D5CEC5] bg-[#FDFCF9] text-sm text-[#111111] placeholder:text-[#B0AAA2] focus:outline-none focus:ring-2 focus:ring-[#111111]/15 focus:border-[#111111] transition-all"
-                />
+          <form onSubmit={handleSubmit} className="space-y-3 w-full">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--muted-foreground)]">
+                <User className="w-4 h-4" />
               </div>
+              <input
+                id="displayName"
+                type="text"
+                required
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="Full Name"
+                className="w-full pl-9 pr-3.5 py-2.5 rounded-full border border-[var(--border-strong)] bg-[#1D1F21] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] transition-all"
+              />
             </div>
 
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-xs font-semibold text-[#3A3630] uppercase tracking-wider mb-1.5"
-              >
-                Work Email
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#A8A29E]">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="alex@acme.com"
-                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#D5CEC5] bg-[#FDFCF9] text-sm text-[#111111] placeholder:text-[#B0AAA2] focus:outline-none focus:ring-2 focus:ring-[#111111]/15 focus:border-[#111111] transition-all"
-                />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--muted-foreground)]">
+                <Mail className="w-4 h-4" />
               </div>
+              <input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email Address"
+                className="w-full pl-9 pr-3.5 py-2.5 rounded-full border border-[var(--border-strong)] bg-[#1D1F21] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] transition-all"
+              />
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label
-                  htmlFor="password"
-                  className="block text-xs font-semibold text-[#3A3630] uppercase tracking-wider"
-                >
-                  Password
-                </label>
-                <span className="text-[11px] font-mono text-[#A8A29E]">
-                  (min 6 chars)
-                </span>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--muted-foreground)]">
+                <Lock className="w-4 h-4" />
               </div>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#A8A29E]">
-                  <Lock className="w-4 h-4" />
-                </div>
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="new-password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-[#D5CEC5] bg-[#FDFCF9] text-sm text-[#111111] placeholder:text-[#B0AAA2] focus:outline-none focus:ring-2 focus:ring-[#111111]/15 focus:border-[#111111] transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#A8A29E] hover:text-[#111111] transition-colors"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password (min 6)"
+                className="w-full pl-9 pr-10 py-2.5 rounded-full border border-[var(--border-strong)] bg-[#1D1F21] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 px-4 rounded-xl bg-[#111111] text-white font-medium text-sm hover:bg-[#2C2926] active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-[#111111]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs flex items-center justify-center gap-2 mt-2"
+              className="w-full py-2.5 px-4 rounded-full bg-[var(--accent)] text-[#18181A] font-semibold text-sm hover:bg-[#D5B98A] transition-all flex items-center justify-center gap-2 mt-1"
             >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Creating Account…</span>
-                </>
-              ) : (
-                <>
-                  <span>Create Account</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Sign Up</span>}
             </button>
           </form>
 
-          <div className="mt-6 pt-5 border-t border-[#E5E0D8] flex items-center justify-between text-xs text-[#78716C]">
-            <span>Already have an account?</span>
-            <Link
-              href="/login"
-              className="font-semibold text-[#111111] underline underline-offset-4 hover:text-[#C05621] transition-colors"
-            >
-              Sign in →
+          <div className="mt-4 text-[11px] text-[var(--muted-foreground)]">
+            Already have an account?{" "}
+            <Link href="/login" className="text-[var(--accent)] hover:underline">
+              Sign in
             </Link>
           </div>
-        </div>
-
-        {/* Security & RBAC note */}
-        <div className="mt-6 flex items-center justify-center gap-2 text-xs text-[#8C827A]">
-          <ShieldCheck className="w-4 h-4 text-[#059669]" />
-          <span>Encrypted sessions with JWT authentication</span>
         </div>
       </div>
     </main>

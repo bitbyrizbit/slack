@@ -1,24 +1,32 @@
 import type { Metadata } from "next";
-import { Lora, Plus_Jakarta_Sans } from "next/font/google";
+import { Cormorant_Garamond, Outfit, La_Belle_Aurore } from "next/font/google";
 import "./globals.css";
 import AuthGuard from "@/components/AuthGuard";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
-const lora = Lora({
+const headingFont = Cormorant_Garamond({
   subsets: ["latin"],
-  variable: "--font-lora",
+  variable: "--font-heading",
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const bodyFont = Outfit({
   subsets: ["latin"],
-  variable: "--font-jakarta",
+  variable: "--font-body",
+  display: "swap",
+});
+
+const signatureFont = La_Belle_Aurore({
+  subsets: ["latin"],
+  variable: "--font-signature",
+  weight: "400",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Slack — Travel Disruption Recovery Engine",
-  description: "A trip is a dependency graph, where buffer time is edge slack.",
+  title: "Slack - Effortless Travel",
+  description: "Experience effortless journeys and perfectly orchestrated itineraries.",
 };
 
 export default function RootLayout({
@@ -27,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${lora.variable} ${plusJakartaSans.variable}`}>
+    <html lang="en" className={`${headingFont.variable} ${bodyFont.variable} ${signatureFont.variable}`}>
       <body className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased selection:bg-[var(--border)]">
         <ErrorBoundary>
           <AuthGuard>{children}</AuthGuard>

@@ -249,14 +249,14 @@ export default function DashboardPage() {
               <button
                 onClick={handleLoadDemoTrip}
                 disabled={isDemoLoading}
-                className="flex items-center gap-2 border border-[var(--foreground)] bg-[var(--foreground)] px-4 py-2.5 text-xs font-semibold text-[var(--background)] hover:bg-[#38332B] transition-colors"
+                className="flex items-center gap-2 border border-[var(--foreground)] bg-transparent px-4 py-2.5 rounded-full text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors"
               >
-                <Sparkles className="h-3.5 w-3.5 text-[#FCD34D]" />
+                <Sparkles className="h-3.5 w-3.5 text-[var(--accent)]" />
                 <span>{isDemoLoading ? "Seeding..." : "Load Demo Trip (Alpine Odyssey)"}</span>
               </button>
               <button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="flex items-center gap-2 border border-[var(--border-strong)] bg-[var(--card)] px-4 py-2.5 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
+                className="flex items-center gap-2 border border-[var(--border-strong)] bg-transparent px-4 py-2.5 rounded-full text-xs font-semibold text-[var(--foreground)] hover:border-[var(--accent)] transition-colors"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>Create Custom Trip</span>
@@ -318,7 +318,7 @@ export default function DashboardPage() {
 
                     {/* Thin Connection Warning Badge */}
                     {hasThinLayover && (
-                      <div className="mt-4 border border-[#FCD34D] bg-[#FFFBEB] p-2.5 text-xs text-[#92400E]">
+                      <div className="mt-4 border border-[#FCD34D] bg-[#FFFBEB] p-2.5 text-xs text-[#92400E] rounded-xl">
                         <div className="flex items-center gap-1.5 font-bold text-[#78350F]">
                           <AlertTriangle className="h-3.5 w-3.5 text-[var(--accent)] shrink-0" />
                           <span>
@@ -328,7 +328,7 @@ export default function DashboardPage() {
                           </span>
                         </div>
                         <div className="text-[11px] text-[#92400E] mt-1">
-                          {thinConns[0].from_booking_title} → {thinConns[0].to_booking_title} (
+                          {thinConns[0].from_booking_title} -> {thinConns[0].to_booking_title} (
                           {Math.round(thinConns[0].actual_gap_minutes)}m gap,{" "}
                           {Math.round(thinConns[0].slack_minutes)}m slack)
                         </div>
@@ -336,9 +336,9 @@ export default function DashboardPage() {
                     )}
 
                     {!hasThinLayover && res && (
-                      <div className="mt-4 flex items-center gap-1.5 border border-[#A7F3D0] bg-[#ECFDF5] px-2.5 py-1.5 text-[11px] text-[#065F46]">
+                      <div className="mt-4 flex items-center gap-1.5 border border-[#A7F3D0] bg-[#ECFDF5] px-2.5 py-1.5 text-[11px] text-[#065F46] rounded-xl">
                         <CheckCircle className="h-3.5 w-3.5 text-[#059669] shrink-0" />
-                        <span>All connection edges verified with safe buffer</span>
+                        <span>All connections verified with safe buffer</span>
                       </div>
                     )}
                   </div>

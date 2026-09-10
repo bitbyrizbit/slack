@@ -1,18 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #FFFFFF;
-  --foreground: #111111;
-  --card: #F7F7F7;
-  --card-foreground: #111111;
-  --border: #E0E0E0;
-  --border-strong: #BBBBBB;
-  --muted: #F2F2F2;
-  --muted-foreground: #666666;
-  --accent: #C05621;
+  --background: #18181A;
+  --foreground: #E6D5B8;
+  --card: #222225;
+  --card-foreground: #E6D5B8;
+  --border: #3A3A3C;
+  --border-strong: #505055;
+  --muted: #2A2A2D;
+  --muted-foreground: #A1998A;
+  --accent: #C2A878;
 
-  --font-heading: var(--font-lora), "Georgia", "Cambria", "Times New Roman", serif;
-  --font-body: var(--font-jakarta), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: var(--font-heading), "Georgia", "Cambria", "Times New Roman", serif;
+  --font-body: var(--font-body), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-signature: var(--font-signature), cursive;
 }
 
 body {
