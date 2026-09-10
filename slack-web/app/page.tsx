@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LandingCarousel from "@/components/LandingCarousel";
 import { Plane, ShieldCheck, MapPin, Search, Calendar } from "lucide-react";
 import SlackLogo from "@/components/SlackLogo";
 
@@ -9,7 +10,7 @@ export default function LandingPage() {
       <header className="px-8 py-6 w-full flex items-center justify-between border-b border-[var(--border)] relative z-20 bg-[var(--background)]">
         <div className="flex items-center gap-5">
           <SlackLogo className="scale-110 origin-left" />
-          <div className="flex flex-col text-[var(--accent)] text-[9px] uppercase tracking-[0.25em] font-bold border-l border-[var(--border-strong)] pl-4 leading-[1.4]">
+          <div className="flex flex-col text-[var(--accent)] text-[10px] uppercase tracking-[0.15em] font-medium opacity-90 font-[family-name:var(--font-body)] border-l border-[var(--border-strong)] pl-4 leading-[1.3]">
             <span>Seamless</span>
             <span>Travel</span>
             <span>Orchestrated</span>
@@ -66,43 +67,7 @@ export default function LandingPage() {
 
           {/* Right Content (Green bg) */}
           <div className="md:w-[45%] mt-16 md:mt-0 relative w-full">
-            <div className="relative bg-[#18181A] border border-[#3A3A3C] rounded-2xl p-8 shadow-2xl overflow-hidden max-w-sm mx-auto">
-              <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#3A3A3C]">
-                <div className="font-serif-heading text-lg font-medium text-[var(--foreground)]">Paris Getaway</div>
-                <div className="text-[10px] text-[#2D3A31] bg-[var(--accent)] px-3 py-1 rounded-full font-bold uppercase tracking-widest">
-                  Active
-                </div>
-              </div>
-              
-              <div className="space-y-6">
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-8 h-8 rounded-full bg-[#E6D5B8] flex items-center justify-center text-[#18181A]">
-                      <Plane size={14} />
-                    </div>
-                    <div className="w-px h-10 bg-[#3A3A3C] my-2"></div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-[var(--accent)] font-semibold tracking-wide uppercase mb-1">Departure</div>
-                    <div className="text-base text-[var(--foreground)] font-medium">Flight AF123</div>
-                    <div className="text-xs text-[var(--muted-foreground)] mt-1">10:00 - 12:30</div>
-                  </div>
-                </div>
-                
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-8 h-8 rounded-full border border-[#3A3A3C] bg-[#2D3A31] flex items-center justify-center text-[var(--accent)]">
-                      <MapPin size={14} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-[var(--accent)] font-semibold tracking-wide uppercase mb-1">Arrival</div>
-                    <div className="text-base text-[var(--foreground)] font-medium">Hotel Le Meurice</div>
-                    <div className="text-xs text-[var(--muted-foreground)] mt-1">14:00 Check-in</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <LandingCarousel />
           </div>
         </div>
       </section>

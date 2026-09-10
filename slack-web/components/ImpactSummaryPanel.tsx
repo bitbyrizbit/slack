@@ -263,7 +263,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
                   {missedList.map((item) => (
                     <div
                       key={item.booking_id}
-                      className="border-2 border-dashed border-[var(--foreground)] bg-[#FFF5F5] p-3 text-xs"
+                      className="border-2 border-dashed border-[var(--foreground)] bg-[var(--background)] p-3 text-xs"
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-serif-heading text-sm font-bold text-[var(--foreground)]">
@@ -387,7 +387,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
                       ? { bg: "#EBF3F9", text: "#1E3E5B", border: "#2B5B84" }
                       : cand.candidate_type === "shift"
                       ? { bg: "#FBF1E8", text: "#633B22", border: "#885434" }
-                      : { bg: "#FFF5F5", text: "var(--foreground)", border: "var(--foreground)" };
+                      : { bg: "var(--background)", text: "var(--foreground)", border: "var(--foreground)" };
 
                   return (
                     <div

@@ -179,7 +179,7 @@ export default function TripWorkspacePage() {
         />
       )}
 
-      <main className="relative flex-1 overflow-hidden">
+      <main className="relative flex-1 overflow-y-auto overflow-x-hidden">
         {suggestedDependencies.length > 0 && !isViewer && (
           <div className="absolute top-3 left-4 right-4 sm:right-auto z-20 flex flex-wrap items-center gap-3 border border-[#F59E0B] bg-[#FFFBEB]/95 backdrop-blur-md px-4 py-2.5 shadow-md text-xs text-[#92400E] max-w-xl animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex items-center gap-2 flex-1 min-w-[220px]">

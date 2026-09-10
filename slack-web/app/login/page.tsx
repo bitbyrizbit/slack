@@ -139,7 +139,7 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-[500px] aspect-square flex flex-col items-center justify-center p-8 sm:p-12 rounded-full bg-[var(--card)] border border-[var(--border-strong)] shadow-[0_0_80px_rgba(0,0,0,0.8)]">
         <div className="w-full max-w-[320px] mx-auto text-center flex flex-col items-center">
           <Link href="/" className="mb-6 block transform -rotate-3 hover:scale-105 transition-transform">
-            <SlackLogo />
+            <SlackLogo italicText={true} />
           </Link>
 
           <h2 className="text-2xl font-serif-heading font-normal text-[var(--foreground)] mb-1">

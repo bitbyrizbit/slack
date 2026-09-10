@@ -103,7 +103,7 @@ export const DemoControlBar: React.FC<DemoControlBarProps> = ({
           <button
             onClick={onTriggerSampleDisruption}
             disabled={isLoading || !currentTrip}
-            className="flex items-center gap-1.5 border border-[var(--foreground)] bg-[#FFF5F5] px-3 py-1 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--background)] hover:border-[var(--foreground)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 border border-[var(--foreground)] bg-[var(--background)] px-3 py-1 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--background)] hover:border-[var(--foreground)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
             title="Pre-filled Flight LX 354 (+60m delay): triggers ripple, breaks shuttle connection (-45m), drops score to Critical"
           >
             <Zap className="h-3.5 w-3.5 text-[var(--foreground)]" />

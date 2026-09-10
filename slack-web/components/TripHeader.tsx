@@ -173,11 +173,11 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
 
         {/* Impact Analysis Drawer Button */}
         {activeDisruptionsCount > 0 && onOpenImpactPanel && (
-          <button
-            onClick={onOpenImpactPanel}
-            className="flex items-center gap-1.5 border border-[var(--foreground)] bg-[#FFF5F5] px-2 py-1 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--background)] transition-colors shrink-0"
-            title="View active disruptions and impacted bookings"
-          >
+            <button
+              onClick={onOpenImpactPanel}
+              className="flex items-center gap-1.5 border border-[var(--accent)] bg-[var(--accent)] px-2 py-1 text-xs font-semibold text-[var(--background)] hover:bg-[#D5C2A5] transition-colors shrink-0"
+              title="View active disruptions and impacted bookings"
+            >
             <ShieldAlert className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">
               {activeDisruptionsCount} Impact{activeDisruptionsCount > 1 ? "s" : ""}
@@ -229,14 +229,16 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
         <button
           onClick={onOpenTriggerDisruption}
           disabled={totalBookings === 0 || isViewer}
-          className="flex items-center gap-1.5 border border-[var(--foreground)] bg-[#FFF5F5] px-3 py-1.5 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--background)] hover:border-[var(--foreground)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
+          className="flex items-center gap-1.5 border border-[var(--accent)] bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-[var(--background)] hover:bg-[#D5C2A5] disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
           title={
-            isViewer
-              ? "Viewer role: read-only (server enforced)"
-              : "Simulate a flight delay or cancellation to compute ripple impact"
+            totalBookings === 0
+              ? "Add a booking first to trigger a disruption"
+              : isViewer
+              ? "Viewers cannot trigger disruptions"
+              : "Simulate a travel disruption"
           }
         >
-          <AlertTriangle className="h-3.5 w-3.5 text-[var(--foreground)]" />
+          <AlertTriangle className="h-3.5 w-3.5 text-[var(--background)]" />
           <span className="hidden sm:inline">Disruption</span>
         </button>
 
