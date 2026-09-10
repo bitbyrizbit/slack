@@ -36,7 +36,7 @@ export default function LandingPage() {
       <section className="relative w-full flex-1 flex flex-col">
         {/* Background Split */}
         <div className="absolute inset-0 flex z-0">
-          <div className="w-1/2 bg-[var(--background)] h-full"></div>
+          <div className="w-1/2 bg-white h-full"></div>
           <div className="w-1/2 bg-[#E8F0E9] h-full border-l border-[var(--border)]"></div>
         </div>
 

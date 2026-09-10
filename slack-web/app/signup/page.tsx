@@ -59,10 +59,10 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="relative min-h-screen bg-[var(--background)] flex flex-col items-center justify-center px-4 overflow-hidden">
+    <main className="relative min-h-screen bg-[#E8F0E9] flex flex-col items-center justify-center px-4 overflow-hidden">
       <AirplaneBg />
 
-      <div className="relative z-10 w-full max-w-[500px] aspect-square flex flex-col items-center justify-center p-8 sm:p-12 rounded-full bg-[var(--card)] border border-[var(--border-strong)] shadow-[0_0_80px_rgba(0,0,0,0.8)]">
+      <div className="relative z-10 w-full max-w-[500px] aspect-square flex flex-col items-center justify-center p-8 sm:p-12 rounded-full bg-[var(--card)] border border-[var(--border-strong)] shadow-xl">
         <div className="w-full max-w-[320px] mx-auto text-center flex flex-col items-center">
           <Link href="/" className="mb-4 block transform -rotate-3 hover:scale-105 transition-transform">
             <SlackLogo italicText={true} />
@@ -93,7 +93,7 @@ export default function SignupPage() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Full Name"
-                className="w-full pl-9 pr-3.5 py-2.5 rounded-full border border-[var(--border-strong)] bg-[#1D1F21] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] transition-all"
+                className="w-full pl-9 pr-3.5 py-2.5 rounded-full border border-[var(--border-strong)] bg-[var(--muted)] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] transition-all"
               />
             </div>
 
@@ -108,7 +108,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email Address"
-                className="w-full pl-9 pr-3.5 py-2.5 rounded-full border border-[var(--border-strong)] bg-[#1D1F21] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] transition-all"
+                className="w-full pl-9 pr-3.5 py-2.5 rounded-full border border-[var(--border-strong)] bg-[var(--muted)] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] transition-all"
               />
             </div>
 
@@ -124,7 +124,7 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password (min 6)"
-                className="w-full pl-9 pr-10 py-2.5 rounded-full border border-[var(--border-strong)] bg-[#1D1F21] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] transition-all"
+                className="w-full pl-9 pr-10 py-2.5 rounded-full border border-[var(--border-strong)] bg-[var(--muted)] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--accent)] transition-all"
               />
               <button
                 type="button"

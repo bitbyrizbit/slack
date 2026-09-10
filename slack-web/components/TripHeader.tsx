@@ -117,7 +117,7 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
           className="flex items-center gap-2 group shrink-0"
           title="Return to Trip Health Dashboard"
         >
-          <div className="flex h-8 w-8 items-center justify-center border border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)] group-hover:bg-[#38332B] transition-colors">
+          <div className="flex h-8 w-8 items-center justify-center border border-[var(--foreground)] bg-[#2D3A31] text-white group-hover:bg-[#38332B] transition-colors">
             <Compass className="h-4 w-4" />
           </div>
           <span className="font-serif-heading text-lg font-bold tracking-tight text-[var(--foreground)] hidden md:inline">
@@ -175,7 +175,7 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
         {activeDisruptionsCount > 0 && onOpenImpactPanel && (
             <button
               onClick={onOpenImpactPanel}
-              className="flex items-center gap-1.5 border border-[var(--accent)] bg-[var(--accent)] px-2 py-1 text-xs font-semibold text-[var(--background)] hover:bg-[#D5C2A5] transition-colors shrink-0"
+              className="flex items-center gap-1.5 border border-[var(--accent)] bg-[var(--accent)] px-2 py-1 text-xs font-semibold text-[#1A1A1A] hover:bg-[#D5C2A5] transition-colors shrink-0"
               title="View active disruptions and impacted bookings"
             >
             <ShieldAlert className="h-3.5 w-3.5" />
@@ -192,7 +192,7 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
           onClick={() => onChangeViewMode("graph")}
           className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium transition-colors ${
             viewMode === "graph"
-              ? "bg-[var(--foreground)] text-[var(--background)]"
+              ? "bg-[#2D3A31] text-white"
               : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
           }`}
         >
@@ -203,7 +203,7 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
           onClick={() => onChangeViewMode("list")}
           className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium transition-colors ${
             viewMode === "list"
-              ? "bg-[var(--foreground)] text-[var(--background)]"
+              ? "bg-[#2D3A31] text-white"
               : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
           }`}
         >
@@ -229,7 +229,7 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
         <button
           onClick={onOpenTriggerDisruption}
           disabled={totalBookings === 0 || isViewer}
-          className="flex items-center gap-1.5 border border-[var(--accent)] bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-[var(--background)] hover:bg-[#D5C2A5] disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
+          className="flex items-center gap-1.5 border border-[var(--accent)] bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-[#1A1A1A] hover:bg-[#D5C2A5] disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
           title={
             totalBookings === 0
               ? "Add a booking first to trigger a disruption"
@@ -264,7 +264,7 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
             aria-label="More actions"
             className={`p-1.5 border transition-colors ${
               isOverflowOpen
-                ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]"
+                ? "border-[var(--foreground)] bg-[#2D3A31] text-white"
                 : "border-[var(--border-strong)] bg-[var(--card)] text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
             }`}
             title="More actions and views"

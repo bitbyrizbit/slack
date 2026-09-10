@@ -113,7 +113,7 @@ export const TriggerDisruptionModal: React.FC<TriggerDisruptionModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center bg-[var(--foreground)] text-[var(--background)]">
+            <div className="flex h-7 w-7 items-center justify-center bg-[#2D3A31] text-white">
               <AlertTriangle className="h-4 w-4" />
             </div>
             <h2 className="font-serif-heading text-lg font-bold text-[var(--foreground)]">
@@ -182,7 +182,7 @@ export const TriggerDisruptionModal: React.FC<TriggerDisruptionModalProps> = ({
                   onClick={() => setDisruptionType(t)}
                   className={`border py-1.5 text-center capitalize text-xs font-medium transition-colors ${
                     disruptionType === t
-                      ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]"
+                      ? "border-[var(--foreground)] bg-[#2D3A31] text-white"
                       : "border-[var(--border-strong)] bg-[var(--background)] text-[var(--muted-foreground)] hover:border-[var(--foreground)]"
                   }`}
                 >

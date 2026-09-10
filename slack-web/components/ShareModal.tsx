@@ -103,7 +103,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center bg-[var(--foreground)] text-[var(--background)]">
+            <div className="flex h-8 w-8 items-center justify-center bg-[#2D3A31] text-white">
               <Users className="h-4 w-4" />
             </div>
             <div>
@@ -278,7 +278,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       <span
                         className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 border ${
                           m.role === "owner"
-                            ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]"
+                            ? "border-[var(--foreground)] bg-[#2D3A31] text-white"
                             : m.role === "editor"
                             ? "border-[#2B5B84] bg-[#F0F5FA] text-[#1E3A8A]"
                             : "border-[var(--border)] bg-[var(--muted)] text-[var(--muted-foreground)]"

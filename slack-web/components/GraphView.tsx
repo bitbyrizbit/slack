@@ -206,7 +206,7 @@ export const GraphView: React.FC<GraphViewProps> = ({
             onClick={handleResetView}
             className={`px-2 py-0.5 text-[11px] font-medium transition-colors ${
               activeDayIndex === null
-                ? "bg-[var(--foreground)] text-[var(--background)]"
+                ? "bg-[#2D3A31] text-white"
                 : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             }`}
           >
@@ -218,7 +218,7 @@ export const GraphView: React.FC<GraphViewProps> = ({
               onClick={() => handleJumpToDay(d.startTimestamp, idx)}
               className={`px-2 py-0.5 text-[11px] font-medium transition-colors ${
                 activeDayIndex === idx
-                  ? "bg-[var(--foreground)] text-[var(--background)]"
+                  ? "bg-[#2D3A31] text-white"
                   : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
               }`}
             >

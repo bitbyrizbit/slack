@@ -195,7 +195,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
                 <ArrowLeft className="h-3.5 w-3.5" />
               </button>
             ) : (
-              <span className="flex h-6 w-6 items-center justify-center bg-[var(--foreground)] text-[var(--background)]">
+              <span className="flex h-6 w-6 items-center justify-center bg-[#2D3A31] text-white">
                 <AlertTriangle className="h-3.5 w-3.5" />
               </span>
             )}
@@ -532,7 +532,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
                           }}
                           className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold transition-colors ${
                             cand.is_recommended
-                              ? "bg-[var(--foreground)] text-[var(--background)] hover:bg-[#38332B]"
+                              ? "bg-[#2D3A31] text-white hover:bg-[#38332B]"
                               : "border border-[var(--foreground)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--muted)]"
                           }`}
                         >

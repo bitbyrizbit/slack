@@ -87,7 +87,7 @@ export const ActivityFeedDrawer: React.FC<ActivityFeedDrawerProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[var(--border)] p-4 bg-[var(--muted)]">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center bg-[var(--foreground)] text-[var(--background)]">
+          <div className="flex h-7 w-7 items-center justify-center bg-[#2D3A31] text-white">
             <History className="h-4 w-4" />
           </div>
           <div>

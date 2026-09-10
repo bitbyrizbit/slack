@@ -45,7 +45,7 @@ export const TripCreateModal: React.FC<TripCreateModalProps> = ({
       <div className="w-full max-w-md border border-[var(--border-strong)] bg-[var(--card)] p-6">
         <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center bg-[var(--foreground)] text-[var(--background)]">
+            <div className="flex h-7 w-7 items-center justify-center bg-[#2D3A31] text-white">
               <Compass className="h-4 w-4" />
             </div>
             <span className="font-serif-heading text-lg font-bold text-[var(--foreground)]">

@@ -172,7 +172,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   onClick={() => setType(t)}
                   className={`border py-1.5 text-center capitalize font-medium transition-colors ${
                     type === t
-                      ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]"
+                      ? "border-[var(--foreground)] bg-[#2D3A31] text-white"
                       : "border-[var(--border-strong)] bg-[var(--background)] text-[var(--muted-foreground)] hover:border-[var(--foreground)]"
                   }`}
                 >

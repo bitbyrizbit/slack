@@ -80,7 +80,7 @@ export default function LandingCarousel() {
               {/* Flight Section */}
               <div className="flex gap-4">
                 <div className="flex flex-col items-center">
-                  <div className="w-8 h-8 rounded-full bg-[var(--foreground)] flex items-center justify-center text-[var(--foreground)]">
+                  <div className="w-8 h-8 rounded-full bg-[#E8F0E9] flex items-center justify-center text-[#2D3A31]">
                     <Plane size={14} />
                   </div>
                   <div className="w-px h-10 bg-[var(--border)] my-2"></div>
