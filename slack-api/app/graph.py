@@ -1,6 +1,6 @@
 # NetworkX graph construction and slack computation
 from datetime import datetime
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 import networkx as nx
 
 from app.config import settings
