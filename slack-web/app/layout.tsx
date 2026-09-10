@@ -1,26 +1,28 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Outfit, La_Belle_Aurore } from "next/font/google";
+import { Playfair_Display, Montserrat } from "next/font/google";
 import "./globals.css";
 import AuthGuard from "@/components/AuthGuard";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
-const headingFont = Cormorant_Garamond({
+const headingFont = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-heading",
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
-const bodyFont = Outfit({
+const bodyFont = Montserrat({
   subsets: ["latin"],
   variable: "--font-body",
+  weight: ["300", "400", "500", "600"],
   display: "swap",
 });
 
-const signatureFont = La_Belle_Aurore({
+// We can just reuse Playfair Display for the signature or use it directly inline
+const signatureFont = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-signature",
-  weight: "400",
+  weight: ["400", "600", "700"],
   display: "swap",
 });
 

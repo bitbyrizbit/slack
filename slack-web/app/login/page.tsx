@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import SlackLogo from "@/components/SlackLogo";
 import AirplaneBg from "@/components/AirplaneBg";
 import {
   Compass,
@@ -137,17 +138,8 @@ export default function LoginPage() {
 
       <div className="relative z-10 w-full max-w-[500px] aspect-square flex flex-col items-center justify-center p-8 sm:p-12 rounded-full bg-[var(--card)] border border-[var(--border-strong)] shadow-[0_0_80px_rgba(0,0,0,0.8)]">
         <div className="w-full max-w-[320px] mx-auto text-center flex flex-col items-center">
-          <Link
-            href="/"
-            className="flex items-center gap-2 transform -rotate-3 relative overflow-hidden shadow-sm mb-6 inline-flex"
-          >
-            <div className="absolute inset-0 flex">
-              <div className="w-1/2 bg-[#18181A] h-full"></div>
-              <div className="w-1/2 bg-[var(--accent)] h-full"></div>
-            </div>
-            <span className="relative font-[family-name:var(--font-signature)] text-3xl font-normal text-[var(--foreground)] z-10 px-4 py-1 pb-2">
-              Slack
-            </span>
+          <Link href="/" className="mb-6 block transform -rotate-3 hover:scale-105 transition-transform">
+            <SlackLogo />
           </Link>
 
           <h2 className="text-2xl font-serif-heading font-normal text-[var(--foreground)] mb-1">
@@ -158,7 +150,7 @@ export default function LoginPage() {
           </p>
 
           {error && (
-            <div className="mb-4 p-2 rounded-lg bg-red-900/30 border border-red-500/50 text-red-200 text-[10px] w-full text-center">
+            <div className="mb-4 p-2 rounded-lg bg-[var(--muted)] border border-[var(--border-strong)] text-[var(--accent)] text-[10px] w-full text-center">
               {error}
             </div>
           )}

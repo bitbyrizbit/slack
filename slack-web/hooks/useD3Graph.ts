@@ -265,8 +265,8 @@ export function useD3Graph({
       const prev = simNodes[i - 1];
       const curr = simNodes[i];
       // Keep a minimum safe horizontal distance even between different tracks to prevent exact vertical overlap
-      if (curr.x! < prev.x! + 45) {
-        curr.x = prev.x! + 45;
+      if (curr.x! < prev.x! + 120) {
+        curr.x = prev.x! + 120;
       }
     }
 

@@ -53,10 +53,10 @@ interface D3Link {
 const NODE_RADIUS = 30;
 
 const TYPE_COLORS: Record<string, { fill: string; stroke: string; label: string; text: string }> = {
-  flight: { fill: "#EBF3F9", stroke: "#2B5B84", label: "Flight", text: "#1E3E5B" },
-  hotel: { fill: "#FBF1E8", stroke: "#885434", label: "Hotel", text: "#633B22" },
-  transfer: { fill: "#EDF7F2", stroke: "#2D6A4F", label: "Transfer", text: "#1E4734" },
-  activity: { fill: "#F7EEF6", stroke: "#6D3A6D", label: "Activity", text: "#4D284D" },
+  flight: { fill: "#18181A", stroke: "none", label: "Flight", text: "#E6D5B8" },
+  hotel: { fill: "#2D3A31", stroke: "none", label: "Hotel", text: "#E6D5B8" },
+  transfer: { fill: "#E6D5B8", stroke: "none", label: "Transfer", text: "#18181A" },
+  activity: { fill: "#FFFFFF", stroke: "none", label: "Activity", text: "#18181A" },
 };
 
 // Strict & Defensive Edge Style Resolver (guarantees safe slack >30m never renders as violated)
