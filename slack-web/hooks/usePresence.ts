@@ -48,7 +48,10 @@ export function usePresence(currentTrip: Trip | null, loadGraphSilent: (tripId: 
     sendHeartbeat();
     const heartbeatTimer = setInterval(sendHeartbeat, 10000);
 
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    let apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    if (apiBase && !apiBase.startsWith("http://") && !apiBase.startsWith("https://")) {
+      apiBase = `https://${apiBase}`;
+    }
     const sseUrl = `${apiBase}/trips/${tripId}/events`;
     const eventSource = new EventSource(sseUrl);
 

@@ -31,7 +31,14 @@ import {
 } from "./types";
 import { getAuthHeaders, setAuth, clearAuth } from "./auth";
 
-const RAW_API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const RAW_API = (() => {
+  const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  // Guard: ensure the URL has a protocol so it isn't treated as a relative path
+  if (url && !url.startsWith("http://") && !url.startsWith("https://")) {
+    return `https://${url}`;
+  }
+  return url;
+})();
 const API_BASE = RAW_API.replace(/\/+$/, "");
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
