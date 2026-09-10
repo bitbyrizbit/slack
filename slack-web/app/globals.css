@@ -27,10 +27,6 @@ h1, h2, h3, h4, .font-serif-heading {
   font-family: var(--font-heading);
 }
 
-/* Ensure no gradients anywhere as instructed */
-*, *::before, *::after {
-  background-image: none !important;
-}
 
 /* Custom scrollbar for notebook feel */
 ::-webkit-scrollbar {

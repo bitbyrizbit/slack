@@ -7,7 +7,7 @@ import {
 import {
   listTrips, getTrip, getTripGraph, listActiveDisruptions, getTripResilience,
   createTrip, addBooking, updateBooking, deleteBooking, createDependency,
-  deleteDependency, seedDemoTrip, seedStressTrip
+  deleteDependency, seedDemoTrip, seedStressTrip, dismissSuggestion
 } from "@/lib/api";
 import { ToastMessage } from "@/components/ToastNotification";
 
@@ -36,6 +36,7 @@ export function useTripState(tripIdParam: string, addToast: (msg: string, type: 
   const [isLoadingGraph, setIsLoadingGraph] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isAtRiskFilterActive, setIsAtRiskFilterActive] = useState<boolean>(false);
+  const [myRole, setMyRole] = useState<string | null>(null);
 
   const loadGraph = useCallback(async (tripId: string) => {
     try {
@@ -47,6 +48,7 @@ export function useTripState(tripIdParam: string, addToast: (msg: string, type: 
       ]);
       setNodes(graphData.nodes);
       setEdges(graphData.edges);
+      setMyRole(graphData.my_role ?? null);
       setActiveDisruptions(disruptions);
       if (res) setResilience(res);
       if (disruptions.length === 0) {
@@ -72,6 +74,7 @@ export function useTripState(tripIdParam: string, addToast: (msg: string, type: 
       ]);
       setNodes(graphData.nodes);
       setEdges(graphData.edges);
+      setMyRole(graphData.my_role ?? null);
       setActiveDisruptions(disruptions);
       if (res) setResilience(res);
       setSelectedNode((prev) => {
@@ -135,7 +138,7 @@ export function useTripState(tripIdParam: string, addToast: (msg: string, type: 
         if (res.suggested_dependencies && res.suggested_dependencies.length > 0) {
           setSuggestedDependencies((prev) => [...prev, ...res.suggested_dependencies]);
           addToast(
-            `Added booking "${input.title}". Found ${res.suggested_dependencies.length} auto-suggestion(s).`,
+            `Added booking "${input.title}". Found ${res.suggested_dependencies.length} connection suggestion(s).`,
             "info"
           );
         } else {
@@ -205,11 +208,17 @@ export function useTripState(tripIdParam: string, addToast: (msg: string, type: 
     }
   };
 
-  const handleRejectSuggestion = (sugg: SuggestedDependency) => {
-    setSuggestedDependencies((prev) =>
-      prev.filter((s) => !(s.from === sugg.from && s.to === sugg.to))
-    );
-    addToast("Dismissed suggested dependency", "info");
+  const handleRejectSuggestion = async (sugg: SuggestedDependency) => {
+    if (!currentTrip) return;
+    try {
+      await dismissSuggestion(currentTrip.id, sugg.from, sugg.to);
+      setSuggestedDependencies((prev) =>
+        prev.filter((s) => !(s.from === sugg.from && s.to === sugg.to))
+      );
+      addToast("Dismissed connection suggestion", "info");
+    } catch (err) {
+      addToast(err instanceof Error ? err.message : "Failed to dismiss suggestion", "error");
+    }
   };
 
   const handleSeedDemoTrip = async () => {
@@ -251,7 +260,7 @@ export function useTripState(tripIdParam: string, addToast: (msg: string, type: 
     isDependencyModalOpen, setIsDependencyModalOpen, depOriginNodeId, setDepOriginNodeId,
     activeDisruptions, setActiveDisruptions, resilience, setResilience,
     isLoading, isLoadingGraph, setIsLoadingGraph, error, setError,
-    isAtRiskFilterActive, setIsAtRiskFilterActive,
+    isAtRiskFilterActive, setIsAtRiskFilterActive, myRole,
     loadGraph, loadGraphSilent, handleSelectTrip, handleCreateTrip,
     handleSaveBooking, handleDeleteBooking, handleAddDependency, handleDeleteEdge,
     handleAcceptSuggestion, handleRejectSuggestion, handleSeedDemoTrip, handleSeedStressTrip

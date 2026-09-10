@@ -33,6 +33,7 @@ def build_trip_graph(
     trip_name: str,
     bookings: List[Booking],
     dependencies: List[Dependency],
+    my_role: Optional[str] = None,
 ) -> GraphResponse:
     # Construct a directed NetworkX graph
     g = nx.DiGraph()
@@ -119,4 +120,72 @@ def build_trip_graph(
         trip_name=trip_name,
         nodes=nodes,
         edges=edges,
+        my_role=my_role,
     )
+
+def compute_trip_resilience(
+    trip_id: str,
+    graph: GraphResponse,
+    effective_bookings: List[Booking],
+) -> "TripResilienceResponse":
+    """
+    Canonical, single source of truth for resilience score computation.
+    Formula:
+      Penalty = (tight_edges * 15) + (violated_edges * 35)
+      Score = max(0, 100 - Penalty) (100 if no edges)
+      Grade: >=80 'Robust', >=50 'Caution', <50 'Critical'
+    """
+    from app.models import TripResilienceResponse, ThinConnection
+
+    total_edges = len(graph.edges)
+    safe_edges = 0
+    tight_edges = 0
+    violated_edges = 0
+    thin_conns: List[ThinConnection] = []
+    booking_map = {str(b.id): b.title for b in effective_bookings}
+
+    for edge in graph.edges:
+        if edge.status == "violated":
+            violated_edges += 1
+        elif edge.status == "tight":
+            tight_edges += 1
+        else:
+            safe_edges += 1
+
+        if edge.status in ("tight", "violated") or edge.slack_minutes <= 30:
+            thin_conns.append(
+                ThinConnection(
+                    from_booking_id=edge.from_node,
+                    from_booking_title=booking_map.get(edge.from_node, "From Booking"),
+                    to_booking_id=edge.to_node,
+                    to_booking_title=booking_map.get(edge.to_node, "To Booking"),
+                    min_buffer_minutes=edge.min_buffer_minutes,
+                    actual_gap_minutes=edge.actual_gap_minutes,
+                    slack_minutes=edge.slack_minutes,
+                    status=edge.status,
+                )
+            )
+
+    penalty = tight_edges * 15 + violated_edges * 35
+    score = max(0, 100 - penalty)
+    if total_edges == 0:
+        score = 100
+
+    if score >= 80:
+        grade = "Robust"
+    elif score >= 50:
+        grade = "Caution"
+    else:
+        grade = "Critical"
+
+    return TripResilienceResponse(
+        trip_id=str(trip_id),
+        score=score,
+        grade=grade,
+        total_edges=total_edges,
+        safe_edges=safe_edges,
+        tight_edges=tight_edges,
+        violated_edges=violated_edges,
+        thin_connections=thin_conns,
+    )
+

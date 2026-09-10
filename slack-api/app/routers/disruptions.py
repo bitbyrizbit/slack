@@ -1,4 +1,4 @@
-﻿import asyncio
+import asyncio
 import json
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID, uuid4
@@ -27,6 +27,31 @@ def trigger_disruption(trip_id: UUID, disruption_in: DisruptionCreate, current_u
     booking = db_get_booking(disruption_in.booking_id)
     if not booking or booking.trip_id != trip_id:
         raise HTTPException(status_code=400, detail='Disrupted booking not found in this trip')
+
+    active_disruptions = db_list_active_disruptions(trip_id)
+    existing_disruption = next((d for d in active_disruptions if d.booking_id == disruption_in.booking_id), None)
+    if existing_disruption:
+        original_bookings = db_list_bookings(trip_id)
+        dependencies = db_list_dependencies(trip_id)
+        ripple_path, per_node_impact, updated_graph = compute_ripple_impact(
+            trip_id=str(trip.id),
+            trip_name=trip.name,
+            disrupted_booking_id=str(existing_disruption.booking_id),
+            original_bookings=original_bookings,
+            dependencies=dependencies,
+            active_disruptions=active_disruptions,
+        )
+        return RippleResponse(
+            disruption_id=str(existing_disruption.id),
+            disrupted_booking_id=str(existing_disruption.booking_id),
+            disruption_type=existing_disruption.disruption_type,
+            delay_minutes=existing_disruption.delay_minutes,
+            description=existing_disruption.description,
+            ripple_path=ripple_path,
+            per_node_impact=per_node_impact,
+            updated_graph=updated_graph,
+        )
+
     disruption = db_create_disruption(trip_id, disruption_in)
     actor_name = current_user['display_name']
     actor_email = current_user['email']
@@ -135,35 +160,45 @@ def trigger_sample_disruption_endpoint(req: SampleDisruptionRequest, current_use
     """
     1-click trigger for a guided disruption on the demo trip.
     Pre-fills a 60m delay on Flight LX 354, breaking the shuttle connection and dropping resilience.
+    If an unresolved disruption already exists on that booking, returns it instead of inserting a second one.
     """
     verify_trip_mutation_permission(req.trip_id, current_user)
     bookings = db_list_bookings(req.trip_id)
     if not bookings:
         raise HTTPException(status_code=404, detail='No bookings found in trip')
     target_flight = next((b for b in bookings if b.type == 'flight'), bookings[0])
+
+    active_disruptions = db_list_active_disruptions(req.trip_id)
+    existing_disruption = next((d for d in active_disruptions if d.booking_id == target_flight.id), None)
+    if existing_disruption:
+        original_bookings = db_list_bookings(req.trip_id)
+        dependencies = db_list_dependencies(req.trip_id)
+        trip = db_get_trip(req.trip_id)
+        trip_name = trip.name if trip else 'Trip'
+        ripple_path, per_node_impact, updated_graph = compute_ripple_impact(
+            trip_id=str(req.trip_id),
+            trip_name=trip_name,
+            disrupted_booking_id=str(existing_disruption.booking_id),
+            original_bookings=original_bookings,
+            dependencies=dependencies,
+            active_disruptions=active_disruptions,
+        )
+        return RippleResponse(
+            disruption_id=str(existing_disruption.id),
+            disrupted_booking_id=str(existing_disruption.booking_id),
+            disruption_type=existing_disruption.disruption_type,
+            delay_minutes=existing_disruption.delay_minutes,
+            description=existing_disruption.description,
+            ripple_path=ripple_path,
+            per_node_impact=per_node_impact,
+            updated_graph=updated_graph,
+        )
+
     desc = req.description or f'Severe air traffic flow restriction & holding pattern delay on {target_flight.title}'
     disruption_in = DisruptionCreate(booking_id=target_flight.id, disruption_type='delay', delay_minutes=req.delay_minutes, description=desc)
     return trigger_disruption(req.trip_id, disruption_in, current_user)
 
-@router.post('/trips/{trip_id}/disruptions/live-weather')
-async def trigger_live_weather_disruption_endpoint(trip_id: UUID, req: LiveWeatherDisruptionRequest, current_user: dict=Depends(get_current_user)):
-    """
-    Query real-time weather from Open-Meteo and trigger an authentic live weather disruption.
-    """
-    verify_trip_mutation_permission(trip_id, current_user)
-    weather_info = await fetch_live_airport_weather(req.airport_code)
-    bookings = db_list_bookings(trip_id)
-    if not bookings:
-        raise HTTPException(status_code=404, detail='No bookings found in trip')
-    target_booking = None
-    if req.booking_id:
-        target_booking = next((b for b in bookings if b.id == req.booking_id), None)
-    if not target_booking:
-        target_booking = next((b for b in bookings if b.type == 'flight'), bookings[0])
-    delay_mins = weather_info['suggested_delay_minutes']
-    desc = f"Live Weather Disruption ({weather_info['airport_name']}): {weather_info['weather_description']}, {weather_info['temperature_c']} deg C, wind {weather_info['wind_speed_kmh']} km/h (gusts {weather_info['wind_gusts_kmh']} km/h). Ground stop delay: {delay_mins}m."
-    disruption_in = DisruptionCreate(booking_id=target_booking.id, disruption_type='weather', delay_minutes=delay_mins, description=desc)
-    return trigger_disruption(trip_id, disruption_in, current_user)
+
 
 
 @router.get('/trips/{trip_id}/disruptions/resolved', response_model=List[Disruption])

@@ -38,17 +38,8 @@ const TYPE_COLORS: Record<string, { fill: string; stroke: string; label: string;
   activity: { fill: "#F7EEF6", stroke: "#6D3A6D", label: "Activity", text: "#4D284D" },
 };
 
-export function getEdgeStyle(status: "safe" | "tight" | "violated", slackMinutes?: number) {
-  const effectiveStatus: "safe" | "tight" | "violated" =
-    slackMinutes !== undefined
-      ? slackMinutes < 0
-        ? "violated"
-      : slackMinutes <= 30
-        ? "tight"
-      : "safe"
-    : status;
-
-  if (effectiveStatus === "violated") {
+export function getEdgeStyle(status: "safe" | "tight" | "violated") {
+  if (status === "violated") {
     return {
       status: "violated" as const,
       stroke: "#B91C1C",
@@ -59,7 +50,7 @@ export function getEdgeStyle(status: "safe" | "tight" | "violated", slackMinutes
       badgeText: "#991B1B",
     };
   }
-  if (effectiveStatus === "tight") {
+  if (status === "tight") {
     return {
       status: "tight" as const,
       stroke: "#C05621",
@@ -132,7 +123,13 @@ export function useD3Graph({
 }) {
   // Primary D3 Render Effect
   useEffect(() => {
-    if (!svgRef.current || !containerRef.current || nodes.length === 0) return;
+    if (!svgRef.current || !containerRef.current) return;
+
+    // Setup SVG Canvas & always clean up old content first
+    const svg = d3.select(svgRef.current);
+    svg.selectAll("*").remove();
+
+    if (nodes.length === 0) return;
 
     const { width: viewportW, height: viewportH } = containerDimensions;
 
@@ -174,10 +171,6 @@ export function useD3Graph({
       .scaleLinear()
       .domain([domainMin, domainMax])
       .range([140, canvasContentWidth - 140]);
-
-    // Setup SVG Canvas
-    const svg = d3.select(svgRef.current);
-    svg.selectAll("*").remove();
 
     const defs = svg.append("defs");
 
@@ -457,10 +450,10 @@ export function useD3Graph({
         const fromRev = reversedPath.indexOf(fromId);
         const toRev = reversedPath.indexOf(toId);
         if ((fromRev !== -1 && fromRev <= reverseStepIndex) || (toRev !== -1 && toRev <= reverseStepIndex)) {
-          return getEdgeStyle("safe", 45);
+          return getEdgeStyle("safe");
         }
       }
-      return getEdgeStyle(d.status, d.slack_minutes);
+      return getEdgeStyle(d.status);
     };
 
     // Render Edges
@@ -576,7 +569,7 @@ export function useD3Graph({
       const distFromAnchor = Math.hypot(b.x - b.anchor.x, b.y - b.anchor.y);
       if (distFromAnchor > 12) {
         b.hasLeaderLine = true;
-        const style = getEdgeStyle(b.link.status, b.link.slack_minutes);
+        const style = getEdgeStyle(b.link.status);
         leaderLinesGroup
           .append("line")
           .attr("x1", b.anchor.x)
@@ -753,58 +746,65 @@ export function useD3Graph({
       })
       .attr("stroke-width", (d) => (d.id === selectedNodeId ? 3.5 : 2));
 
-    // Type Badge inside circle
-    nodeElements
-      .append("text")
-      .attr("text-anchor", "middle")
-      .attr("y", -5)
-      .attr("font-size", "9px")
-      .attr("font-family", "var(--font-body), system-ui, sans-serif")
-      .attr("font-weight", "700")
-      .attr("text-transform", "uppercase")
-      .attr("fill", (d) => TYPE_COLORS[d.type]?.stroke || "var(--foreground)")
-      .text((d) => TYPE_COLORS[d.type]?.label || d.type);
+    // Lucide Icon inside circle
+    const iconGroups = nodeElements
+      .append("g")
+      .attr("class", "node-type-icon")
+      .attr("transform", "translate(-9, -9)")
+      .attr("stroke", (d) => TYPE_COLORS[d.type]?.stroke || "var(--foreground)")
+      .attr("stroke-width", 2)
+      .attr("stroke-linecap", "round")
+      .attr("stroke-linejoin", "round")
+      .attr("fill", "none");
 
-    // Time text inside circle
-    nodeElements
-      .append("text")
-      .attr("text-anchor", "middle")
-      .attr("y", 9)
-      .attr("font-size", "10.5px")
-      .attr("font-family", "var(--font-body), system-ui, sans-serif")
-      .attr("font-weight", "600")
-      .attr("fill", "#4A453C")
-      .text((d) => {
-        if (d.start_time.includes("T")) {
-          return d.start_time.split("T")[1].substring(0, 5);
-        }
-        return "";
-      });
+    iconGroups.each(function(d) {
+      const g = d3.select(this);
+      if (d.type === "flight") {
+        g.append("path")
+          .attr("d", "M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z")
+          .attr("transform", "scale(0.75)");
+      } else if (d.type === "hotel") {
+        g.append("path")
+          .attr("d", "M2 4v16 M2 8h18a2 2 0 0 1 2 2v10 M2 17h20 M6 8v9")
+          .attr("transform", "scale(0.75)");
+      } else if (d.type === "transfer") {
+        const carG = g.append("g").attr("transform", "scale(0.75)");
+        carG.append("path").attr("d", "M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2.1 11.2 2 11.8 2 12.3v3.7c0 .6.4 1 1 1h2 M9 17h6");
+        carG.append("circle").attr("cx", 7).attr("cy", 17).attr("r", 2);
+        carG.append("circle").attr("cx", 17).attr("cy", 17).attr("r", 2);
+      } else {
+        const actG = g.append("g").attr("transform", "scale(0.75)");
+        actG.append("path").attr("d", "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0");
+        actG.append("circle").attr("cx", 12).attr("cy", 10).attr("r", 3);
+      }
+    });
 
-    // Node Title below circle with truncation and hover affordance (Requirement 7)
+    // Node Title below circle with truncation and hover affordance
     nodeElements
       .append("text")
       .attr("text-anchor", "middle")
-      .attr("y", NODE_RADIUS + 16)
+      .attr("y", NODE_RADIUS + 15)
       .attr("font-size", "11px")
       .attr("font-family", "var(--font-heading), Georgia, serif")
       .attr("font-weight", "600")
       .attr("fill", "var(--foreground)")
       .text((d) => {
-        return d.title.length > 22 ? d.title.substring(0, 20) + "..." : d.title;
+        return d.title.length > 20 ? d.title.substring(0, 18) + "..." : d.title;
       });
 
-    // Node Location below title
+    // Node Time directly below title
     nodeElements
       .append("text")
       .attr("text-anchor", "middle")
-      .attr("y", NODE_RADIUS + 29)
-      .attr("font-size", "9.5px")
+      .attr("y", NODE_RADIUS + 28)
+      .attr("font-size", "10px")
       .attr("font-family", "var(--font-body), system-ui, sans-serif")
-      .attr("fill", "#8E887D")
+      .attr("font-weight", "500")
+      .attr("fill", "#78716C")
       .text((d) => {
-        if (!d.location) return "";
-        return d.location.length > 22 ? d.location.substring(0, 20) + "..." : d.location;
+        const start = d.start_time.includes("T") ? d.start_time.split("T")[1].substring(0, 5) : "";
+        const end = d.end_time.includes("T") ? d.end_time.split("T")[1].substring(0, 5) : "";
+        return start && end ? `${start} – ${end}` : start;
       });
 
     // Node Drag Behavior: allow manual fine-tuning while updating edges

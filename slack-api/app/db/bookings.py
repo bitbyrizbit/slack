@@ -8,6 +8,7 @@ import psycopg2
 import psycopg2.extras
 from app.config import settings
 from app.models import ActivityFeedItem, Booking, BookingCreate, BookingUpdate, Dependency, DependencyCreate, DependencyUpdate, Disruption, DisruptionCreate, RecoveryCandidate, ScoringBreakdown, Trip, TripCreate, TripMember, User
+from app.db.core import get_db_connection, _to_datetime, _to_uuid, _to_float, _to_dict
 
 def _row_to_booking(r: Any) -> Booking:
     return Booking(id=_to_uuid(r['id']), trip_id=_to_uuid(r['trip_id']), type=r['type'], title=r['title'], vendor=r.get('vendor'), location=r.get('location'), start_time=_to_datetime(r['start_time']) or datetime.now(timezone.utc), end_time=_to_datetime(r['end_time']) or datetime.now(timezone.utc), cost=_to_float(r.get('cost')), cancellation_policy=r.get('cancellation_policy'), metadata=_to_dict(r.get('metadata')), created_at=_to_datetime(r['created_at']) or datetime.now(timezone.utc))
@@ -101,3 +102,33 @@ def db_delete_dependency(dep_id: UUID) -> bool:
     with get_db_connection() as conn:
         conn.execute('DELETE FROM dependencies WHERE id = %s', (str(dep_id),))
         return conn.cursor.rowcount > 0
+
+def db_list_dependencies(trip_id: UUID) -> List[Dependency]:
+    with get_db_connection() as conn:
+        conn.execute('SELECT * FROM dependencies WHERE trip_id = %s', (str(trip_id),))
+        rows = conn.cursor.fetchall()
+        return [_row_to_dependency(r) for r in rows]
+
+def db_dismiss_suggestion(trip_id: UUID, from_booking_id: UUID, to_booking_id: UUID, dismissed_by: Optional[UUID] = None) -> bool:
+    sugg_id = uuid4()
+    now_iso = datetime.now(timezone.utc).isoformat()
+    with get_db_connection() as conn:
+        conn.execute(
+            """
+            INSERT INTO dismissed_suggestions (
+                id, trip_id, from_booking_id, to_booking_id, dismissed_by, dismissed_at
+            ) VALUES (%s, %s, %s, %s, %s, %s)
+            ON CONFLICT (trip_id, from_booking_id, to_booking_id) DO NOTHING
+            """,
+            (str(sugg_id), str(trip_id), str(from_booking_id), str(to_booking_id), str(dismissed_by) if dismissed_by else None, now_iso)
+        )
+        return True
+
+def db_list_dismissed_suggestions(trip_id: UUID) -> List[Tuple[str, str]]:
+    with get_db_connection() as conn:
+        conn.execute(
+            "SELECT from_booking_id, to_booking_id FROM dismissed_suggestions WHERE trip_id = %s",
+            (str(trip_id),)
+        )
+        rows = conn.cursor.fetchall()
+        return [(str(r['from_booking_id']), str(r['to_booking_id'])) for r in rows]

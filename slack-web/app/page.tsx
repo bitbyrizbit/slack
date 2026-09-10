@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { isAuthenticated } from "@/lib/auth";
 import { HelpModal } from "@/components/HelpModal";
-import { seedDemoTrip } from "@/lib/api";
+import { seedDemoTrip, loginUser } from "@/lib/api";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -36,11 +36,16 @@ export default function LandingPage() {
   const handleLoadDemo = async () => {
     setIsDemoLoading(true);
     try {
-      const res = await seedDemoTrip();
+      if (!isAuthenticated()) {
+        await loginUser("owner@demo.com", "demo1234");
+      }
+      const res = await seedDemoTrip(true);
       router.push(`/trips/${res.trip.id}`);
     } catch (err) {
-      console.error(err);
-      alert("Failed to load demo trip");
+      console.error("Failed to load demo trip:", err);
+      // Fallback navigation to dashboard if authenticated
+      router.push("/dashboard");
+    } finally {
       setIsDemoLoading(false);
     }
   };
@@ -67,7 +72,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setIsHelpOpen(true)}
-              className="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+              className="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
             >
               How it works
             </button>
@@ -94,35 +99,36 @@ export default function LandingPage() {
           <div className="inline-flex items-center gap-2 border border-[var(--border-strong)] bg-[var(--card)] px-3.5 py-1.5 mb-6 shadow-xs">
             <span className="flex h-2 w-2 rounded-full bg-[#15803D]" />
             <span className="text-xs font-medium text-[var(--muted-foreground)]">
-              A Trip is a Directed Acyclic Graph (DAG)
+              Smart Travel Dependency Engine
             </span>
           </div>
 
           <h1 className="font-serif-heading text-4xl sm:text-6xl font-bold tracking-tight text-[var(--foreground)] leading-[1.15]">
-            Where Buffer Time is <br className="hidden sm:inline" />
-            <span className="text-[#2B5B84] italic">Edge Slack</span>.
+            A trip is a chain of connections, <br className="hidden sm:inline" />
+            <span className="text-[#2B5B84] italic">not a flat list of dates</span>.
           </h1>
 
           <p className="mt-6 max-w-2xl mx-auto text-base sm:text-lg text-[var(--muted-foreground)] leading-relaxed">
-            Calendar apps see static dates. Slack models the physical dependencies of travel.
-            When delays ripple across flights, transfers, and hotels, our engine simulates cascades
-            and computes autonomous recovery.
+            Calendar apps show dates in isolation. Slack tracks how your bookings actually connect — your transfer depends on your flight landing on time, and your hotel check-in depends on the transfer. When delays strike, our engine detects the ripple effect early and generates immediate recovery options before connections break.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href="/login"
-              className="flex items-center gap-2 border border-[var(--foreground)] bg-[var(--foreground)] px-6 py-3.5 text-sm font-semibold text-[var(--background)] hover:bg-[#38332B] shadow-sm transition-all hover:translate-y-[-1px]"
+            <button
+              id="hero-try-demo-button"
+              onClick={handleLoadDemo}
+              disabled={isDemoLoading}
+              className="flex items-center gap-2 border border-[var(--foreground)] bg-[var(--foreground)] px-6 py-3.5 text-sm font-semibold text-[var(--background)] hover:bg-[#38332B] shadow-sm transition-all hover:translate-y-[-1px] cursor-pointer disabled:opacity-50"
             >
-              <span>Try Interactive Demo</span>
+              <span>{isDemoLoading ? "Opening Demo Trip..." : "Try a Demo"}</span>
               <ArrowRight className="h-4 w-4" />
-            </Link>
+            </button>
             <Link
+              id="hero-create-account-button"
               href="/signup"
               className="flex items-center gap-2 border border-[var(--border-strong)] bg-[var(--card)] px-6 py-3.5 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--muted)] transition-all"
             >
               <Sparkles className="h-4 w-4 text-[#885434]" />
-              <span>Create Free Account</span>
+              <span>Create Account</span>
             </Link>
           </div>
         </div>
@@ -133,11 +139,10 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="font-serif-heading text-2xl sm:text-3xl font-bold text-[var(--foreground)]">
-              How Travel Disruption Works as a Graph
+              How Travel Disruption Works
             </h2>
             <p className="mt-3 text-sm text-[var(--muted-foreground)]">
-              Linear itineraries fail because connections depend on transfer slack. See how a single
-              delayed flight impacts your entire itinerary.
+              Traditional itineraries fail because a single delay cascades down the chain. Here is how Slack detects and recovers from disruptions before you travel:
             </p>
           </div>
 
@@ -148,16 +153,15 @@ export default function LandingPage() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#15803D] bg-[#DCFCE7] px-2 py-0.5 border border-[#86EFAC]">
-                    1. Healthy Baseline
+                    1. Safe Buffer
                   </span>
                   <Clock className="h-4 w-4 text-[#15803D]" />
                 </div>
                 <h3 className="font-serif-heading text-lg font-bold text-[var(--foreground)]">
-                  Positive Buffer Slack
+                  Positive Connection Buffer
                 </h3>
                 <p className="mt-2 text-xs text-[var(--muted-foreground)] leading-relaxed">
-                  Flight LX 354 arrives at 09:30. Shuttle departs at 10:15. Gap is 45 mins.
-                  Required buffer is 30 mins. Edge slack is <strong className="text-[#15803D]">+15 min</strong>.
+                  Flight LX 354 arrives at 09:30. Shuttle leaves at 10:15. You have a 45-minute gap with a comfortable <strong className="text-[#15803D]">+15 min safety buffer</strong>.
                 </p>
               </div>
 
@@ -167,7 +171,7 @@ export default function LandingPage() {
                   <span className="text-[10px] text-[#15803D] font-bold">ON TIME</span>
                 </div>
                 <div className="my-2 border-l-2 border-dashed border-[#15803D] pl-3 py-1 text-[var(--muted-foreground)]">
-                  Slack: +15m buffer
+                  Buffer: +15m safe window
                 </div>
                 <div className="flex justify-between items-center text-[var(--foreground)]">
                   <span>Chamonix Shuttle</span>
@@ -181,16 +185,15 @@ export default function LandingPage() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#991B1B] bg-[#FEE2E2] px-2 py-0.5 border border-[#FCA5A5]">
-                    2. Disruption Wave
+                    2. The Ripple Effect
                   </span>
                   <AlertTriangle className="h-4 w-4 text-[#991B1B]" />
                 </div>
                 <h3 className="font-serif-heading text-lg font-bold text-[#991B1B]">
-                  Slack Inversion: Ripple Delay
+                  Delay Cascades Downstream
                 </h3>
                 <p className="mt-2 text-xs text-[#7F1D1D] leading-relaxed">
-                  Thunderstorm delays Flight LX 354 by 60 mins. Arrival becomes 10:30.
-                  Edge slack inverts to <strong className="text-[#991B1B]">-15 min</strong>. Shuttle is missed!
+                  A weather delay adds 60 mins to the flight, moving arrival to 10:30. The buffer disappears and inverts to <strong className="text-[#991B1B]">-15 mins</strong>. The shuttle is missed!
                 </p>
               </div>
 
@@ -214,16 +217,15 @@ export default function LandingPage() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#2B5B84] bg-[#E0F2FE] px-2 py-0.5 border border-[#BAE6FD]">
-                    3. Autonomous Recovery
+                    3. Proactive Recovery
                   </span>
                   <Zap className="h-4 w-4 text-[#2B5B84]" />
                 </div>
                 <h3 className="font-serif-heading text-lg font-bold text-[#2B5B84]">
-                  Graph Auto-Resolution
+                  Automated Resolution
                 </h3>
                 <p className="mt-2 text-xs text-[#1E3A5F] leading-relaxed">
-                  The engine evaluates rerouting and automatically shifts downstream dependencies,
-                  booking the 11:30 shuttle and saving the mountain hotel check-in.
+                  The engine evaluates rebooking options and downstream shifts, automatically holding the 11:30 shuttle to protect the hotel check-in.
                 </p>
               </div>
 
@@ -254,11 +256,10 @@ export default function LandingPage() {
                 <GitBranch className="h-5 w-5" />
               </div>
               <h3 className="font-serif-heading text-lg font-bold text-[var(--foreground)]">
-                Directed Acyclic Graphs
+                Connection Chains
               </h3>
               <p className="mt-2 text-xs text-[var(--muted-foreground)] leading-relaxed">
-                Every booking is a node with temporal and location prerequisites. Dependencies
-                automatically compute buffer times and flag fragile connections.
+                Every booking is linked with transfer windows and travel buffers. The engine continuously validates each link and flags vulnerable connections.
               </p>
             </div>
 
@@ -270,8 +271,7 @@ export default function LandingPage() {
                 Resilience Health Scoring
               </h3>
               <p className="mt-2 text-xs text-[var(--muted-foreground)] leading-relaxed">
-                Realtime resilience rings score trip robustness from 0 to 100 based on minimum
-                connection slack, single points of failure, and vendor flexibility.
+                Instant resilience rings score itinerary health from 0 to 100 based on minimum connection buffers, single points of failure, and cancellation policies.
               </p>
             </div>
 
@@ -280,11 +280,10 @@ export default function LandingPage() {
                 <Layers className="h-5 w-5" />
               </div>
               <h3 className="font-serif-heading text-lg font-bold text-[var(--foreground)]">
-                Server-Enforced Roles
+                Role-Based Collaboration
               </h3>
               <p className="mt-2 text-xs text-[var(--muted-foreground)] leading-relaxed">
-                Invite travelers as Owners, Editors, or Viewers. Role verification happens on the
-                server via signed JWT tokens, not client-side toggles.
+                Invite fellow travelers as Owners, Editors, or Viewers. Security rules are verified server-side with signed tokens, keeping read-only views safe.
               </p>
             </div>
           </div>

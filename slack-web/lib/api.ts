@@ -101,11 +101,32 @@ export async function signupUser(
 }
 
 export async function logoutUser(): Promise<void> {
+  try {
+    await fetch(`${API_BASE}/auth/logout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    });
+  } catch {
+    // Ignore network errors during logout
+  }
   clearAuth();
 }
 
 export async function getMe(): Promise<AuthUser> {
   return fetchJson<AuthUser>(`${API_BASE}/auth/me`);
+}
+
+export async function updateProfile(displayName: string): Promise<AuthUser> {
+  const data = await fetchJson<AuthResponse>(`${API_BASE}/auth/profile`, {
+    method: "PATCH",
+    body: JSON.stringify({ display_name: displayName }),
+  });
+  setAuth(data);
+  return {
+    user_id: data.user_id,
+    email: data.email,
+    display_name: data.display_name,
+  };
 }
 
 export async function createTrip(name: string): Promise<Trip> {
@@ -194,6 +215,20 @@ export async function deleteDependency(dependencyId: string): Promise<void> {
 
 export async function getTripSuggestions(tripId: string): Promise<SuggestedDependency[]> {
   return fetchJson<SuggestedDependency[]>(`${API_BASE}/trips/${tripId}/suggestions`);
+}
+
+export async function dismissSuggestion(
+  tripId: string,
+  fromBookingId: string,
+  toBookingId: string
+): Promise<{ status: string }> {
+  return fetchJson<{ status: string }>(`${API_BASE}/trips/${tripId}/suggestions/dismiss`, {
+    method: "POST",
+    body: JSON.stringify({
+      from_booking_id: fromBookingId,
+      to_booking_id: toBookingId,
+    }),
+  });
 }
 
 // Phase 2: Disruption API methods

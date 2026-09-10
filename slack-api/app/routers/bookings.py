@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Query, status
 from fastapi.responses import StreamingResponse
 from app.auth import create_jwt, get_current_user, get_current_user_optional, hash_password, verify_password
 from app.demo import seed_standard_demo_trip, seed_stress_test_trip, fetch_live_airport_weather, AIRPORT_COORDINATES
-from app.database import db_accept_invite, db_add_activity_log, db_add_trip_member, db_apply_recovery, db_create_booking, db_create_dependency, db_create_disruption, db_create_trip, db_create_user, db_delete_booking, db_delete_dependency, db_get_booking, db_get_dependency, db_get_disruption, db_get_invite_by_token, db_get_member_role, db_get_recovery_candidate, db_get_recovery_candidates_by_disruption, db_get_trip, db_get_trip_member, db_get_user_by_email_with_hash, db_get_user_role_for_trip, db_list_active_disruptions, db_list_activity_feed, db_list_bookings, db_list_dependencies, db_list_trip_members, db_list_trips, db_list_trips_for_user, db_remove_trip_member, db_resolve_disruption, db_save_recovery_candidates, db_update_booking, db_update_dependency, db_update_trip_name, db_delete_trip
+from app.database import db_accept_invite, db_add_activity_log, db_add_trip_member, db_apply_recovery, db_create_booking, db_create_dependency, db_create_disruption, db_create_trip, db_create_user, db_delete_booking, db_delete_dependency, db_dismiss_suggestion, db_list_dismissed_suggestions, db_get_booking, db_get_dependency, db_get_disruption, db_get_invite_by_token, db_get_member_role, db_get_recovery_candidate, db_get_recovery_candidates_by_disruption, db_get_trip, db_get_trip_member, db_get_user_by_email_with_hash, db_get_user_role_for_trip, db_list_active_disruptions, db_list_activity_feed, db_list_bookings, db_list_dependencies, db_list_trip_members, db_list_trips, db_list_trips_for_user, db_remove_trip_member, db_resolve_disruption, db_save_recovery_candidates, db_update_booking, db_update_dependency, db_update_trip_name, db_delete_trip
 from app.events import event_bus
 from app.graph import build_trip_graph
 from app.heuristics import suggest_dependencies_for_booking
@@ -28,8 +28,21 @@ def add_booking(trip_id: UUID, booking_in: BookingCreate, current_user: dict=Dep
     booking = db_create_booking(trip_id, booking_in)
     actor_name = current_user['display_name']
     actor_email = current_user['email']
-    log_activity_and_broadcast(trip_id, actor_name, actor_email, 'BOOKING_ADDED', f"{actor_name} added {booking.type} '{booking.title}'", {'booking_id': str(booking.id), 'title': booking.title, 'type': booking.type})
-    suggested = suggest_dependencies_for_booking(target_booking=booking, existing_bookings=existing_bookings, existing_dependencies=existing_dependencies)
+    log_activity_and_broadcast(
+        trip_id,
+        actor_name,
+        actor_email,
+        'BOOKING_ADDED',
+        f"{actor_name} added booking '{booking.title}'",
+        {'booking_id': str(booking.id), 'title': booking.title, 'type': booking.type}
+    )
+    dismissed_pairs = set(db_list_dismissed_suggestions(trip_id))
+    suggested = suggest_dependencies_for_booking(
+        target_booking=booking,
+        existing_bookings=existing_bookings,
+        existing_dependencies=existing_dependencies,
+        dismissed_pairs=dismissed_pairs,
+    )
     event_bus.broadcast_sync(str(trip_id), 'BOOKING_ADDED', {'booking_id': str(booking.id), 'title': booking.title, 'type': booking.type})
     return BookingWithSuggestions(booking=booking, suggested_dependencies=suggested)
 

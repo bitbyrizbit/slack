@@ -12,6 +12,9 @@ from app.database import (
     db_add_activity_log,
     db_get_trip,
     db_list_bookings,
+    db_list_dependencies,
+    db_list_trips_for_user,
+    db_get_user_by_email,
 )
 from app.models import TripCreate, BookingCreate, DependencyCreate
 
@@ -50,7 +53,12 @@ WMO_WEATHER_CODES = {
 }
 
 
-def seed_standard_demo_trip(owner_id: Optional[UUID] = None, name_suffix: str = "") -> Dict[str, Any]:
+def seed_standard_demo_trip(
+    owner_id: Optional[UUID] = None,
+    name_suffix: str = "",
+    creator_name: Optional[str] = None,
+    creator_email: Optional[str] = None,
+) -> Dict[str, Any]:
     """
     Seed a complete, realistic multi-city Alpine Odyssey trip:
     - 7 bookings
@@ -59,18 +67,44 @@ def seed_standard_demo_trip(owner_id: Optional[UUID] = None, name_suffix: str = 
     - 5 chained dependencies
     - Auto-registered owner and activity feed entries
     """
+    trip_name = "Alpine Odyssey (Zurich → Geneva → Chamonix)"
+
+    if owner_id:
+        existing_trips = db_list_trips_for_user(owner_id)
+        existing = next((t for t in existing_trips if t.name == trip_name), None)
+        if existing:
+            bookings = db_list_bookings(existing.id)
+            dependencies = db_list_dependencies(existing.id)
+            target_flight = next((b for b in bookings if b.type == "flight"), bookings[0] if bookings else None)
+            sample_disruption_payload = None
+            if target_flight:
+                sample_disruption_payload = {
+                    "booking_id": str(target_flight.id),
+                    "booking_title": target_flight.title,
+                    "disruption_type": "delay",
+                    "delay_minutes": 60,
+                    "description": "Air traffic control flow restriction & thunderstorm holding pattern at Zurich (ZRH)",
+                    "expected_impact": "Causes LX 354 to land at 10:30, missing the 10:15 Chamonix Shuttle (-45m slack violation)",
+                }
+            transfer = next((b for b in bookings if b.type == "transfer"), None)
+            activities = [b for b in bookings if b.type == "activity"]
+            return {
+                "trip": existing,
+                "bookings": bookings,
+                "dependencies": dependencies,
+                "sample_disruption": sample_disruption_payload,
+                "tight_booking_id": str(transfer.id) if transfer else None,
+                "overlapping_pair": [str(activities[0].id), str(activities[1].id)] if len(activities) >= 2 else None,
+            }
+
     now = datetime.now(timezone.utc)
     base_date = (now + timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0)
-
-    trip_name = "Alpine Odyssey (Zurich → Geneva → Chamonix)"
-    if name_suffix:
-        trip_name = f"Alpine Odyssey {name_suffix} (Zurich → Geneva → Chamonix)"
 
     trip_in = TripCreate(
         name=trip_name,
         owner_id=owner_id or uuid4(),
     )
-    trip = db_create_trip(trip_in)
+    trip = db_create_trip(trip_in, creator_name=creator_name, creator_email=creator_email)
     trip_id = trip.id
 
     # 1. Booking 1: Flight LX 354 (ZRH -> GVA)
@@ -258,9 +292,10 @@ def seed_standard_demo_trip(owner_id: Optional[UUID] = None, name_suffix: str = 
     )
 
     # Seed members & activity logs
-    db_add_trip_member(trip_id, "aisha@slacktravel.demo", "Aisha (Owner)", role="owner")
-    db_add_trip_member(trip_id, "charlie@slacktravel.demo", "Charlie (Editor)", role="editor")
-    db_add_trip_member(trip_id, "bob@slacktravel.demo", "Bob (Viewer)", role="viewer")
+    editor_user = db_get_user_by_email("editor@demo.com")
+    viewer_user = db_get_user_by_email("viewer@demo.com")
+    db_add_trip_member(trip_id, "editor@demo.com", "Charlie (Editor)", role="editor", user_id=editor_user.id if editor_user else None)
+    db_add_trip_member(trip_id, "viewer@demo.com", "Bob (Viewer)", role="viewer", user_id=viewer_user.id if viewer_user else None)
 
     db_add_activity_log(
         trip_id,
@@ -291,21 +326,38 @@ def seed_standard_demo_trip(owner_id: Optional[UUID] = None, name_suffix: str = 
     }
 
 
-def seed_stress_test_trip() -> Dict[str, Any]:
+def seed_stress_test_trip(
+    owner_id: Optional[UUID] = None,
+    creator_name: Optional[str] = None,
+    creator_email: Optional[str] = None,
+) -> Dict[str, Any]:
     """
     Seed a 16-booking, 5-day Grand European Tour to stress-test D3 affine measure-then-fit layout:
     - 16 bookings across 5 days
     - 14 chained dependencies
     - Multiple parallel tracks & tight transitions
     """
+    trip_name = "Grand European Tour (16 Bookings Stress Test)"
+    if owner_id:
+        existing_trips = db_list_trips_for_user(owner_id)
+        existing = next((t for t in existing_trips if t.name == trip_name), None)
+        if existing:
+            bookings = db_list_bookings(existing.id)
+            dependencies = db_list_dependencies(existing.id)
+            return {
+                "trip": existing,
+                "bookings_count": len(bookings),
+                "dependencies_count": len(dependencies),
+            }
+
     now = datetime.now(timezone.utc)
     base_date = (now + timedelta(days=2)).replace(hour=7, minute=0, second=0, microsecond=0)
 
     trip_in = TripCreate(
-        name="Grand European Tour (16 Bookings Stress Test)",
-        owner_id=uuid4(),
+        name=trip_name,
+        owner_id=owner_id or uuid4(),
     )
-    trip = db_create_trip(trip_in)
+    trip = db_create_trip(trip_in, creator_name=creator_name, creator_email=creator_email)
     trip_id = trip.id
 
     bookings_data = [

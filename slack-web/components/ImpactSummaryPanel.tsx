@@ -37,6 +37,7 @@ interface ImpactSummaryPanelProps {
   onResolve: (disruptionId: string) => Promise<void>;
   onApplyRecovery: (candidateId: string) => Promise<void>;
   onError?: (message: string) => void;
+  isViewer?: boolean;
 }
 
 // Circular Score Ring component
@@ -98,6 +99,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
   onResolve,
   onApplyRecovery,
   onError,
+  isViewer = false,
 }) => {
   // Panel mode: "blast_radius" or "recovery_options"
   const [activeTab, setActiveTab] = useState<"blast_radius" | "recovery_options">("blast_radius");
@@ -562,8 +564,10 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
               <span>Show Recovery Options</span>
             </button>
             <button
+              disabled={isViewer}
               onClick={() => onResolve(String(disruptionId))}
-              className="flex items-center justify-center gap-2 border border-[var(--border-strong)] bg-[var(--background)] px-4 py-2 text-xs font-medium text-[#4A453C] hover:text-[var(--foreground)] hover:border-[var(--foreground)] transition-colors"
+              className="flex items-center justify-center gap-2 border border-[var(--border-strong)] bg-[var(--background)] px-4 py-2 text-xs font-medium text-[#4A453C] hover:text-[var(--foreground)] hover:border-[var(--foreground)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              title={isViewer ? "Viewer role: read-only" : "Reset disruption"}
             >
               <RotateCcw className="h-3.5 w-3.5" />
               <span>Quick Reset Schedule</span>
@@ -573,9 +577,10 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
           <>
             {selectedCandidateId && (
               <button
-                disabled={isApplying}
+                disabled={isApplying || isViewer}
                 onClick={() => handleApplyClick(selectedCandidateId)}
-                className="flex items-center justify-center gap-2 border border-[var(--foreground)] bg-[var(--foreground)] px-4 py-2.5 text-xs font-medium text-[var(--background)] hover:bg-[#38332B] transition-colors"
+                className="flex items-center justify-center gap-2 border border-[var(--foreground)] bg-[var(--foreground)] px-4 py-2.5 text-xs font-medium text-[var(--background)] hover:bg-[#38332B] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                title={isViewer ? "Viewer role: read-only" : "Apply recovery option"}
               >
                 <Check className="h-3.5 w-3.5 text-[#059669]" />
                 <span>

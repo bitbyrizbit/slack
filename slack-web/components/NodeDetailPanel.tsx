@@ -3,6 +3,7 @@
 import React from "react";
 import { X, Edit, Trash2, MapPin, Plus, ArrowRight, Sparkles, Check } from "lucide-react";
 import { GraphEdge, GraphNode, SuggestedDependency } from "@/lib/types";
+import { formatFullDate, formatTimeOnly } from "@/lib/dateUtils";
 
 interface NodeDetailPanelProps {
   node: GraphNode | null;
@@ -89,31 +90,7 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
     (s) => s.from === node.id || s.to === node.id
   );
 
-  const formatFullDate = (isoStr: string) => {
-    try {
-      const d = new Date(isoStr);
-      return d.toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-    } catch {
-      return isoStr;
-    }
-  };
 
-  const formatTimeOnly = (isoStr: string) => {
-    try {
-      const d = new Date(isoStr);
-      return d.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return isoStr;
-    }
-  };
 
   // Duration in hours & minutes
   const startMs = new Date(node.start_time).getTime();

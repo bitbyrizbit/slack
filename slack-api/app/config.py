@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_expire_days: int = 7
 
+    # Groq LLM API Key and Model
+    groq_api_key: Optional[str] = None
+    groq_model: str = "openai/gpt-oss-20b"
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 settings = Settings()

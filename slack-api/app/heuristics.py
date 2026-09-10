@@ -1,5 +1,4 @@
-# Dependency auto suggestion heuristics
-from typing import List, Set, Tuple
+from typing import List, Optional, Set, Tuple
 from app.models import Booking, Dependency, SuggestedDependency
 
 def normalize_location(loc: str | None) -> str:
@@ -45,14 +44,25 @@ def suggest_dependencies_for_booking(
     target_booking: Booking,
     existing_bookings: List[Booking],
     existing_dependencies: List[Dependency],
+    dismissed_pairs: Optional[Set[Tuple[str, str]]] = None,
 ) -> List[SuggestedDependency]:
+    if dismissed_pairs is None and getattr(target_booking, "trip_id", None):
+        try:
+            from app.db.bookings import db_list_dismissed_suggestions
+            dismissed_list = db_list_dismissed_suggestions(target_booking.trip_id)
+            dismissed_pairs = set(dismissed_list)
+        except Exception:
+            dismissed_pairs = set()
+    elif dismissed_pairs is None:
+        dismissed_pairs = set()
+
     suggestions: List[SuggestedDependency] = []
 
-    # Keep track of existing edges to avoid recommending duplicates
+    # Keep track of existing edges and dismissed suggestions to avoid recommending duplicates
     existing_pairs: Set[Tuple[str, str]] = {
         (str(dep.from_booking_id), str(dep.to_booking_id))
         for dep in existing_dependencies
-    }
+    } | set(dismissed_pairs)
 
     target_id = str(target_booking.id)
 

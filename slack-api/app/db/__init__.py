@@ -1,3 +1,4 @@
+# app.db package
 from app.db.core import *
 from app.db.bookings import *
 from app.db.trips import *

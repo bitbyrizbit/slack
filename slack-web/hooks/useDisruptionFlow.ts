@@ -56,6 +56,7 @@ export function useDisruptionFlow(
   const handleResolveDisruption = async (disruptionId: string) => {
     if (!currentTrip) return;
     try {
+      const affectedPath = latestRippleResponse?.ripple_path || [];
       const res = await resolveDisruption(disruptionId);
       setActiveDisruptions((prev) => prev.filter((d) => d.id !== disruptionId));
       if (res.reverted_graph) {
@@ -64,8 +65,27 @@ export function useDisruptionFlow(
       } else {
         await loadGraph(currentTrip.id);
       }
-      setLatestRippleResponse(null);
       setIsImpactPanelOpen(false);
+
+      if (affectedPath.length > 0) {
+        setIsReverseRippling(true);
+        setReverseStepIndex(0);
+        let step = 0;
+        const interval = setInterval(() => {
+          step += 1;
+          if (step < affectedPath.length) {
+            setReverseStepIndex(step);
+          } else {
+            clearInterval(interval);
+            setIsReverseRippling(false);
+            setReverseStepIndex(-1);
+            setLatestRippleResponse(null);
+          }
+        }, 280);
+      } else {
+        setLatestRippleResponse(null);
+      }
+
       addToast("Disruption resolved. Graph reverted cleanly to baseline schedule.", "success");
     } catch (err) {
       addToast(err instanceof Error ? err.message : "Failed to resolve disruption", "error");
@@ -74,12 +94,32 @@ export function useDisruptionFlow(
 
   const handleApplyRecovery = async (candidateId: string) => {
     try {
+      const affectedPath = latestRippleResponse?.ripple_path || [];
       const res = await applyRecoveryOption(candidateId);
       if (currentTrip) {
         await loadGraph(currentTrip.id);
       }
-      setLatestRippleResponse(null);
       setIsImpactPanelOpen(false);
+
+      if (affectedPath.length > 0) {
+        setIsReverseRippling(true);
+        setReverseStepIndex(0);
+        let step = 0;
+        const interval = setInterval(() => {
+          step += 1;
+          if (step < affectedPath.length) {
+            setReverseStepIndex(step);
+          } else {
+            clearInterval(interval);
+            setIsReverseRippling(false);
+            setReverseStepIndex(-1);
+            setLatestRippleResponse(null);
+          }
+        }, 280);
+      } else {
+        setLatestRippleResponse(null);
+      }
+
       addToast(res.confirmation_message || "Recovery option applied.", "success");
     } catch (err) {
       addToast(err instanceof Error ? err.message : "Failed to apply recovery option", "error");

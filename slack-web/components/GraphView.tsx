@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import * as d3 from "d3";
-import { Maximize2, ZoomIn, ZoomOut, RotateCcw, ChevronDown, ChevronUp, MapPin, Clock, DollarSign } from "lucide-react";
+import { Maximize2, ZoomIn, ZoomOut, RotateCcw, ChevronDown, ChevronUp, MapPin, Clock, DollarSign, Plane, Bed, Car } from "lucide-react";
 import { GraphEdge, GraphNode, NodeImpact, SuggestedDependency } from "@/lib/types";
 import { useZoom } from "@/hooks/useZoom";
 import { useRippleAnimation } from "@/hooks/useRippleAnimation";
 import { useD3Graph, getEdgeStyle } from "@/hooks/useD3Graph";
 
-interface GraphViewProps {
+export interface GraphViewProps {
+  tripId?: string;
   nodes: GraphNode[];
   edges: GraphEdge[];
   selectedNodeId: string | null;
@@ -61,6 +62,7 @@ const TYPE_COLORS: Record<string, { fill: string; stroke: string; label: string;
 // Strict & Defensive Edge Style Resolver (guarantees safe slack >30m never renders as violated)
 
 export const GraphView: React.FC<GraphViewProps> = ({
+  tripId,
   nodes,
   edges,
   selectedNodeId,
@@ -80,6 +82,11 @@ export const GraphView: React.FC<GraphViewProps> = ({
   const zoomBehaviorRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const gRootRef = useRef<d3.Selection<SVGGElement, unknown, null, undefined> | null>(null);
   const nodePositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
+
+  // Clear stale node positions when active trip changes so every trip starts from a clean deterministic layout
+  useEffect(() => {
+    nodePositionsRef.current.clear();
+  }, [tripId]);
 
   const [containerDimensions, setContainerDimensions] = useState<{ width: number; height: number }>({
     width: 1200,
@@ -182,7 +189,14 @@ export const GraphView: React.FC<GraphViewProps> = ({
   });
 
   return (
-    <div ref={containerRef} className="relative h-full w-full overflow-hidden bg-[var(--background)] touch-none select-none">
+    <div
+      ref={containerRef}
+      className="relative h-full w-full overflow-hidden touch-none select-none bg-[#FAF9F6]"
+      style={{
+        backgroundImage: "radial-gradient(#E5DFD7 1px, transparent 1px)",
+        backgroundSize: "32px 32px",
+      }}
+    >
       {/* Top Controls Bar: Day Jumps & Camera Controls */}
       <div className="absolute top-3 left-5 right-5 z-10 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
         {/* Day-Jump Navigation */}
@@ -327,19 +341,27 @@ export const GraphView: React.FC<GraphViewProps> = ({
           <div className="p-3 pt-1 border-t border-[var(--border)] flex flex-col gap-2 text-[var(--muted-foreground)]">
             <div className="flex flex-wrap items-center gap-2.5">
               <div className="flex items-center gap-1.5">
-                <span className="inline-block h-3 w-3 rounded-full border border-[#2B5B84] bg-[#EBF3F9]" />
+                <span className="flex h-4 w-4 items-center justify-center rounded-full border border-[#2B5B84] bg-[#EBF3F9]">
+                  <Plane className="h-2.5 w-2.5 text-[#2B5B84]" />
+                </span>
                 <span>Flight</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="inline-block h-3 w-3 rounded-full border border-[#885434] bg-[#FBF1E8]" />
+                <span className="flex h-4 w-4 items-center justify-center rounded-full border border-[#885434] bg-[#FBF1E8]">
+                  <Bed className="h-2.5 w-2.5 text-[#885434]" />
+                </span>
                 <span>Hotel</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="inline-block h-3 w-3 rounded-full border border-[#2D6A4F] bg-[#EDF7F2]" />
+                <span className="flex h-4 w-4 items-center justify-center rounded-full border border-[#2D6A4F] bg-[#EDF7F2]">
+                  <Car className="h-2.5 w-2.5 text-[#2D6A4F]" />
+                </span>
                 <span>Transfer</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="inline-block h-3 w-3 rounded-full border border-[#6D3A6D] bg-[#F7EEF6]" />
+                <span className="flex h-4 w-4 items-center justify-center rounded-full border border-[#6D3A6D] bg-[#F7EEF6]">
+                  <MapPin className="h-2.5 w-2.5 text-[#6D3A6D]" />
+                </span>
                 <span>Activity</span>
               </div>
             </div>

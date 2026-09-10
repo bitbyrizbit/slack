@@ -100,6 +100,7 @@ export interface GraphResponse {
   trip_name: string;
   nodes: GraphNode[];
   edges: GraphEdge[];
+  my_role?: RoleType | string | null;
 }
 
 export interface SuggestedDependency {

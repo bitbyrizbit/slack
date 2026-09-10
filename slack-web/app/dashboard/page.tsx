@@ -29,12 +29,7 @@ import {
 import { getAuthUser } from "@/lib/auth";
 import { ResilienceRing } from "@/components/ResilienceRing";
 import { TripCreateModal } from "@/components/TripCreateModal";
-
-interface Toast {
-  id: string;
-  message: string;
-  type: "success" | "error" | "info";
-}
+import { ToastContainer, ToastMessage } from "@/components/ToastNotification";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -44,7 +39,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDemoLoading, setIsDemoLoading] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const addToast = useCallback(
     (message: string, type: "success" | "error" | "info" = "success") => {
@@ -187,9 +182,13 @@ export default function DashboardPage() {
             {currentUser && (
               <div className="flex items-center gap-2 border-l border-[var(--border)] pl-3 ml-1">
                 <div className="text-right hidden sm:block">
-                  <div className="text-xs font-semibold text-[var(--foreground)] leading-tight">
+                  <Link
+                    href="/profile"
+                    className="text-xs font-semibold text-[var(--foreground)] hover:text-[#2B5B84] hover:underline leading-tight block truncate max-w-[140px]"
+                    title="Edit Profile"
+                  >
                     {currentUser.display_name}
-                  </div>
+                  </Link>
                   <div className="text-[10px] text-[#8E887D] leading-tight">
                     {currentUser.email}
                   </div>
@@ -271,12 +270,20 @@ export default function DashboardPage() {
               const res = resilienceMap[trip.id];
               const thinConns = res?.thin_connections || [];
               const hasThinLayover = thinConns.length > 0;
+              const isAtRisk = res && res.score < 50;
+              const isCaution = res && res.score >= 50 && res.score < 80;
 
               return (
                 <div
                   key={trip.id}
                   onClick={() => router.push(`/trips/${trip.id}`)}
-                  className="group relative flex flex-col justify-between border border-[var(--border-strong)] bg-[var(--card)] p-5 shadow-xs transition-all hover:border-[var(--foreground)] hover:shadow-md cursor-pointer"
+                  className={`group relative flex flex-col justify-between border bg-[var(--card)] p-5 shadow-xs transition-all hover:shadow-md cursor-pointer ${
+                    isAtRisk
+                      ? "border-[#FCA5A5] border-l-4 border-l-[#DC2626] bg-[#FFFBFB]"
+                      : isCaution
+                      ? "border-[#FDE68A] border-l-4 border-l-[#D97706] bg-[#FFFEFA]"
+                      : "border-[var(--border-strong)] border-l-4 border-l-[#059669] hover:border-[var(--foreground)]"
+                  }`}
                 >
                   <div>
                     {/* Header Row: Title & Resilience */}
@@ -376,29 +383,11 @@ export default function DashboardPage() {
         onCreateTrip={handleCreateTrip}
       />
 
-      {/* Toasts Container */}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={`pointer-events-auto flex items-center justify-between gap-3 border px-4 py-2.5 text-xs shadow-lg max-w-sm ${
-              toast.type === "error"
-                ? "border-[#FCA5A5] bg-[#FEE2E2] text-[#991B1B]"
-                : toast.type === "info"
-                ? "border-[#BAE6FD] bg-[#E0F2FE] text-[#0369A1]"
-                : "border-[#86EFAC] bg-[#DCFCE7] text-[#15803D]"
-            }`}
-          >
-            <span>{toast.message}</span>
-            <button
-              onClick={() => removeToast(toast.id)}
-              className="font-bold opacity-70 hover:opacity-100"
-            >
-              ×
-            </button>
-          </div>
-        ))}
-      </div>
+      {/* Consolidated Toast Container */}
+      <ToastContainer
+        toasts={toasts}
+        onDismiss={removeToast}
+      />
     </div>
   );
 }

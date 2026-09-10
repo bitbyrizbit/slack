@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { AlertTriangle, X, CloudRain, RefreshCw } from "lucide-react";
-import { DisruptionCreateInput, DisruptionType, GraphNode, AirportWeather } from "@/lib/types";
+import { Disruption, DisruptionCreateInput, DisruptionType, GraphNode, AirportWeather } from "@/lib/types";
 import { fetchAirportWeather } from "@/lib/api";
 
 interface TriggerDisruptionModalProps {
@@ -10,6 +10,7 @@ interface TriggerDisruptionModalProps {
   onClose: () => void;
   onSubmit: (data: DisruptionCreateInput) => Promise<void>;
   nodes: GraphNode[];
+  activeDisruptions?: Disruption[];
 }
 
 export const TriggerDisruptionModal: React.FC<TriggerDisruptionModalProps> = ({
@@ -17,6 +18,7 @@ export const TriggerDisruptionModal: React.FC<TriggerDisruptionModalProps> = ({
   onClose,
   onSubmit,
   nodes,
+  activeDisruptions = [],
 }) => {
   const [selectedBookingId, setSelectedBookingId] = useState<string>(
     nodes.length > 0 ? nodes[0].id : ""
@@ -145,12 +147,25 @@ export const TriggerDisruptionModal: React.FC<TriggerDisruptionModalProps> = ({
               className="w-full border border-[var(--border-strong)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none bg-[var(--card)]"
               required
             >
-              {nodes.map((n) => (
-                <option key={n.id} value={n.id}>
-                  [{n.type.toUpperCase()}] {n.title} ({n.start_time.split("T")[1].substring(0, 5)})
-                </option>
-              ))}
+              {nodes.map((n) => {
+                const isDisrupted = activeDisruptions.some(
+                  (d) => (d.booking_id === n.id || (d as any).booking_id === n.id) && !d.resolved
+                );
+                return (
+                  <option key={n.id} value={n.id}>
+                    [{n.type.toUpperCase()}] {n.title} ({n.start_time.split("T")[1].substring(0, 5)})
+                    {isDisrupted ? " — [ACTIVE DISRUPTION]" : ""}
+                  </option>
+                );
+              })}
             </select>
+            {activeDisruptions.some(
+              (d) => (d.booking_id === selectedBookingId || (d as any).booking_id === selectedBookingId) && !d.resolved
+            ) && (
+              <div className="mt-2 border border-[#C05621] bg-[#FEF3C7] p-2 text-[11px] text-[#92400E]">
+                ⚠ This booking already has an active unresolved disruption. Resolve or reset it before triggering another.
+              </div>
+            )}
             <p className="mt-1 text-[11px] text-[#8E887D]">
               The engine will recompute downstream edges and ripple impact outward in BFS order.
             </p>
@@ -316,10 +331,21 @@ export const TriggerDisruptionModal: React.FC<TriggerDisruptionModalProps> = ({
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={
+                isSubmitting ||
+                activeDisruptions.some(
+                  (d) => (d.booking_id === selectedBookingId || (d as any).booking_id === selectedBookingId) && !d.resolved
+                )
+              }
               className="border border-[#B91C1C] bg-[#B91C1C] px-4 py-1.5 font-medium text-[var(--background)] hover:bg-[#991B1B] disabled:opacity-50 transition-colors"
             >
-              {isSubmitting ? "Simulating Ripple..." : "Simulate Disruption"}
+              {isSubmitting
+                ? "Simulating Ripple..."
+                : activeDisruptions.some(
+                    (d) => (d.booking_id === selectedBookingId || (d as any).booking_id === selectedBookingId) && !d.resolved
+                  )
+                ? "Already Active Disruption"
+                : "Simulate Disruption"}
             </button>
           </div>
         </form>

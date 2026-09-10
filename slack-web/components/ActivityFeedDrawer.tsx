@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { ActivityFeedItem, Trip } from "@/lib/types";
 import { getTripActivity } from "@/lib/api";
+import { formatRelativeTime } from "@/lib/dateUtils";
 
 interface ActivityFeedDrawerProps {
   isOpen: boolean;
@@ -53,25 +54,7 @@ export const ActivityFeedDrawer: React.FC<ActivityFeedDrawerProps> = ({
 
   if (!isOpen || !trip) return null;
 
-  const formatRelativeTime = (isoString: string) => {
-    try {
-      const diffSecs = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000);
-      if (diffSecs < 10) return "Just now";
-      if (diffSecs < 60) return `${diffSecs}s ago`;
-      const diffMins = Math.floor(diffSecs / 60);
-      if (diffMins < 60) return `${diffMins}m ago`;
-      const diffHours = Math.floor(diffMins / 60);
-      if (diffHours < 24) return `${diffHours}h ago`;
-      return new Date(isoString).toLocaleDateString(undefined, {
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return isoString;
-    }
-  };
+
 
   const getActionIcon = (actionType: string) => {
     switch (actionType) {

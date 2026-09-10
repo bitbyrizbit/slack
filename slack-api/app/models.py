@@ -104,6 +104,7 @@ class GraphResponse(BaseModel):
     trip_name: str
     nodes: List[GraphNode]
     edges: List[GraphEdge]
+    my_role: Optional[str] = None
 
 # Auto suggestion models
 class SuggestedDependency(BaseModel):
@@ -117,6 +118,11 @@ class SuggestedDependency(BaseModel):
 class BookingWithSuggestions(BaseModel):
     booking: Booking
     suggested_dependencies: List[SuggestedDependency]
+
+class DismissSuggestionRequest(BaseModel):
+    from_booking_id: UUID
+    to_booking_id: UUID
+    model_config = ConfigDict(populate_by_name=True)
 
 # Disruption models (Phase 2)
 class DisruptionBase(BaseModel):
@@ -312,6 +318,9 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+
+class UserUpdate(BaseModel):
+    display_name: str
 
 class AuthResponse(BaseModel):
     access_token: str

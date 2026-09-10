@@ -8,20 +8,39 @@ import psycopg2
 import psycopg2.extras
 from app.config import settings
 from app.models import ActivityFeedItem, Booking, BookingCreate, BookingUpdate, Dependency, DependencyCreate, DependencyUpdate, Disruption, DisruptionCreate, RecoveryCandidate, ScoringBreakdown, Trip, TripCreate, TripMember, User
+from app.db.core import get_db_connection, _to_uuid, _to_datetime
 
 def _row_to_trip(r: Any) -> Trip:
     return Trip(id=_to_uuid(r['id']), name=r['name'], owner_id=_to_uuid(r['owner_id']) if r.get('owner_id') else None, created_at=_to_datetime(r['created_at']) or datetime.now(timezone.utc))
 
-def db_create_trip(trip_in: TripCreate) -> Trip:
+def db_create_trip(
+    trip_in: TripCreate,
+    creator_name: Optional[str] = None,
+    creator_email: Optional[str] = None,
+) -> Trip:
     trip_id = uuid4()
     now_iso = datetime.now(timezone.utc).isoformat()
     owner_str = str(trip_in.owner_id) if trip_in.owner_id else None
     owner_member_id = uuid4()
     activity_id = uuid4()
+
+    owner_name = creator_name
+    owner_email = creator_email
+    if (not owner_name or not owner_email) and trip_in.owner_id:
+        with get_db_connection() as conn:
+            conn.execute('SELECT display_name, email FROM users WHERE id = %s', (str(trip_in.owner_id),))
+            u_row = conn.cursor.fetchone()
+            if u_row:
+                owner_name = owner_name or u_row['display_name']
+                owner_email = owner_email or u_row['email']
+
+    owner_name = owner_name or 'Trip Owner'
+    owner_email = owner_email or 'owner@slacktravel.demo'
+
     with get_db_connection() as conn:
         conn.execute('INSERT INTO trips (id, name, owner_id, created_at) VALUES (%s, %s, %s, %s)', (str(trip_id), trip_in.name, owner_str, now_iso))
-        conn.execute('\n            INSERT INTO trip_members (id, trip_id, user_id, email, name, role, joined_at)\n            VALUES (%s, %s, %s, %s, %s, %s, %s)\n            ON CONFLICT (trip_id, email) DO NOTHING\n            ', (str(owner_member_id), str(trip_id), owner_str, 'owner@slacktravel.demo', 'Trip Owner', 'owner', now_iso))
-        conn.execute('\n            INSERT INTO activity_feed (id, trip_id, actor_name, actor_email, action_type, description, metadata, created_at)\n            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)\n            ', (str(activity_id), str(trip_id), 'Trip Owner', 'owner@slacktravel.demo', 'TRIP_CREATED', f"Trip '{trip_in.name}' created", json.dumps({'trip_name': trip_in.name}), now_iso))
+        conn.execute('\n            INSERT INTO trip_members (id, trip_id, user_id, email, name, role, joined_at)\n            VALUES (%s, %s, %s, %s, %s, %s, %s)\n            ON CONFLICT (trip_id, email) DO NOTHING\n            ', (str(owner_member_id), str(trip_id), owner_str, owner_email, owner_name, 'owner', now_iso))
+        conn.execute('\n            INSERT INTO activity_feed (id, trip_id, actor_name, actor_email, action_type, description, metadata, created_at)\n            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)\n            ', (str(activity_id), str(trip_id), owner_name, owner_email, 'TRIP_CREATED', f"Trip '{trip_in.name}' created", json.dumps({'trip_name': trip_in.name}), now_iso))
     return Trip(id=trip_id, name=trip_in.name, owner_id=trip_in.owner_id, created_at=datetime.fromisoformat(now_iso))
 
 def db_get_trip(trip_id: UUID) -> Optional[Trip]:
@@ -58,9 +77,10 @@ def db_get_user_role_for_trip(trip_id: UUID, user_id: UUID) -> Optional[str]:
     """
     Look up this user's role in trip_members for the given trip.
     Returns the role string ('owner', 'editor', 'viewer') or None if not a member.
+    Checks both user_id and email against users table so invites by email resolve properly.
     """
     with get_db_connection() as conn:
-        conn.execute('\n            SELECT role FROM trip_members\n            WHERE trip_id = %s AND user_id = %s\n            ', (str(trip_id), str(user_id)))
+        conn.execute('\n            SELECT tm.role FROM trip_members tm\n            LEFT JOIN users u ON u.id = %s\n            WHERE tm.trip_id = %s AND (tm.user_id = %s OR (u.email IS NOT NULL AND LOWER(tm.email) = LOWER(u.email)))\n            LIMIT 1\n            ', (str(user_id), str(trip_id), str(user_id)))
         row = conn.cursor.fetchone()
     if not row:
         return None
@@ -69,9 +89,18 @@ def db_get_user_role_for_trip(trip_id: UUID, user_id: UUID) -> Optional[str]:
 def db_list_trips_for_user(user_id: UUID) -> List[Trip]:
     """
     Return trips where user is the owner OR is an explicit trip_member.
-    Trips with owner_id = NULL (legacy/demo) are also included for backward compat.
+    Checks both user_id and user email so invitations match correctly.
     """
     with get_db_connection() as conn:
-        conn.execute('\n            SELECT DISTINCT t.id, t.name, t.owner_id, t.created_at\n            FROM trips t\n            LEFT JOIN trip_members tm ON tm.trip_id = t.id AND tm.user_id = %s\n            WHERE t.owner_id = %s\n               OR tm.user_id = %s\n               OR t.owner_id IS NULL\n            ORDER BY t.created_at DESC\n            ', (str(user_id), str(user_id), str(user_id)))
+        conn.execute('''
+            SELECT DISTINCT t.id, t.name, t.owner_id, t.created_at
+            FROM trips t
+            LEFT JOIN trip_members tm ON tm.trip_id = t.id
+            LEFT JOIN users u ON u.id = %s
+            WHERE t.owner_id = %s
+               OR tm.user_id = %s
+               OR (u.email IS NOT NULL AND LOWER(tm.email) = LOWER(u.email))
+            ORDER BY t.created_at DESC
+        ''', (str(user_id), str(user_id), str(user_id)))
         rows = conn.cursor.fetchall()
     return [_row_to_trip(r) for r in rows]

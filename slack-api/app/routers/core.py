@@ -11,16 +11,17 @@ from app.database import db_accept_invite, db_add_activity_log, db_add_trip_memb
 from app.events import event_bus
 from app.graph import build_trip_graph
 from app.heuristics import suggest_dependencies_for_booking
-from app.models import AcceptInviteRequest, AcceptInviteResponse, ActivityFeedItem, ActivityFeedListResponse, AuthResponse, Booking, BookingCreate, BookingUpdate, BookingWithSuggestions, Dependency, DependencyCreate, DependencyUpdate, Disruption, DisruptionCreate, DisruptionResolveResponse, GraphResponse, PresenceUser, RecoveryApplyResponse, RecoveryCandidate, RecoveryOptionsResponse, RippleResponse, RoleType, SuggestedDependency, ThinConnection, Trip, TripCreate, TripMember, TripMemberInviteRequest, TripMemberInviteResponse, TripPresenceResponse, TripResilienceResponse, UserCreate, UserLogin
+from app.models import AcceptInviteRequest, AcceptInviteResponse, ActivityFeedItem, ActivityFeedListResponse, AuthResponse, Booking, BookingCreate, BookingUpdate, BookingWithSuggestions, Dependency, DependencyCreate, DependencyUpdate, Disruption, DisruptionCreate, DisruptionResolveResponse, GraphResponse, PresenceUser, RecoveryApplyResponse, RecoveryCandidate, RecoveryOptionsResponse, RippleResponse, RoleType, SuggestedDependency, ThinConnection, Trip, TripCreate, TripMember, TripMemberInviteRequest, TripMemberInviteResponse, TripPresenceResponse, TripResilienceResponse, UserCreate, UserLogin, UserUpdate
+import psycopg2
+import psycopg2.errors
 from app.ripple import compute_effective_bookings, compute_ripple_impact
 from app.recovery import generate_raw_recovery_candidates, enrich_with_groq_or_fallback
-router = APIRouter()
+from app.routers.trips import get_trip_resilience
 router = APIRouter()
 
 @router.post('/auth/signup', response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
 def signup(user_in: UserCreate):
     """Register a new account. Returns a JWT on success."""
-    import psycopg2
     if not user_in.email.strip() or not user_in.password.strip() or (not user_in.display_name.strip()):
         raise HTTPException(status_code=400, detail='Email, password, and display name are required.')
     if len(user_in.password) < 6:
@@ -53,6 +54,24 @@ def get_me(current_user: dict=Depends(get_current_user)):
     """Return the currently authenticated user's identity from the JWT."""
     return {'user_id': current_user['user_id'], 'email': current_user['email'], 'display_name': current_user['display_name']}
 
+@router.patch('/auth/profile')
+def update_profile(user_update: UserUpdate, current_user: dict=Depends(get_current_user)):
+    """Update the authenticated user's profile (e.g. display_name)."""
+    if not user_update.display_name or not user_update.display_name.strip():
+        raise HTTPException(status_code=400, detail='Display name cannot be empty')
+    user_id = UUID(current_user['user_id'])
+    updated_user = db_update_user_display_name(user_id, user_update.display_name.strip())
+    if not updated_user:
+        raise HTTPException(status_code=404, detail='User not found')
+    # Generate new token with updated display name
+    new_token = create_jwt(str(updated_user.id), updated_user.email, updated_user.display_name)
+    return {
+        'user_id': str(updated_user.id),
+        'email': updated_user.email,
+        'display_name': updated_user.display_name,
+        'access_token': new_token,
+    }
+
 @router.post('/auth/logout')
 def logout():
     """Client-side logout: instruct frontend to clear the token from localStorage."""
@@ -76,37 +95,40 @@ class LiveWeatherDisruptionRequest(BaseModel):
     booking_id: Optional[UUID] = None
 
 @router.post('/demo/seed')
-def seed_demo_endpoint(reuse: bool=Query(True, description='Reuse existing Alpine Odyssey demo trip if already owned by user'), current_user: Optional[dict]=Depends(get_current_user_optional)):
+def seed_demo_endpoint(reuse: bool=Query(True, description='Reuse existing Alpine Odyssey demo trip if already owned by user'), current_user: dict=Depends(get_current_user)):
     """
     Seed a complete, realistic multi-city Alpine Odyssey trip:
     7 bookings, 1 tight connection (+15m slack), 1 overlapping pair, and 5 dependencies.
-    If reuse is True and the current user already owns an Alpine Odyssey trip, reuses it.
-    If a new trip is created, sequences it ("Alpine Odyssey #2", etc.) to prevent duplicate cards.
+    Always checks for an existing trip with the exact base name for the authenticated owner first;
+    if found, returns it and does not create duplicates.
+    Requires authentication unconditionally.
     """
-    owner_id = UUID(current_user['user_id']) if current_user else None
-    if owner_id:
-        existing_trips = db_list_trips_for_user(owner_id)
-        alpine_trips = [t for t in existing_trips if 'Alpine Odyssey' in t.name]
-        if reuse and alpine_trips:
-            trip = alpine_trips[0]
-            bookings = db_list_bookings(trip.id)
-            dependencies = db_list_dependencies(trip.id)
-            resilience = get_trip_resilience(trip.id)
-            return {'trip': trip, 'bookings': bookings, 'dependencies': dependencies, 'resilience': resilience, 'sample_disruption': None, 'tight_booking_id': None, 'overlapping_pair': None}
-        suffix = f'#{len(alpine_trips) + 1}' if alpine_trips else ''
-        seed_data = seed_standard_demo_trip(owner_id=owner_id, name_suffix=suffix)
-    else:
-        seed_data = seed_standard_demo_trip()
+    owner_id = UUID(current_user['user_id'])
+    creator_name = current_user.get('display_name')
+    creator_email = current_user.get('email')
+    seed_data = seed_standard_demo_trip(
+        owner_id=owner_id,
+        creator_name=creator_name,
+        creator_email=creator_email,
+    )
     trip = seed_data['trip']
     resilience = get_trip_resilience(trip.id)
     return {'trip': trip, 'bookings': seed_data['bookings'], 'dependencies': seed_data['dependencies'], 'resilience': resilience, 'sample_disruption': seed_data.get('sample_disruption'), 'tight_booking_id': seed_data.get('tight_booking_id'), 'overlapping_pair': seed_data.get('overlapping_pair')}
 
 @router.post('/demo/seed-stress')
-def seed_stress_endpoint():
+def seed_stress_endpoint(current_user: dict=Depends(get_current_user)):
     """
     Seed a 16-booking, 5-day Grand European Tour to stress-test graph layout scalability.
+    Checks for an existing trip with the fixed name for the authenticated user before inserting.
     """
-    return seed_stress_test_trip()
+    owner_id = UUID(current_user['user_id'])
+    creator_name = current_user.get('display_name')
+    creator_email = current_user.get('email')
+    return seed_stress_test_trip(
+        owner_id=owner_id,
+        creator_name=creator_name,
+        creator_email=creator_email,
+    )
 
 @router.get('/weather/airports')
 async def get_airport_weather_endpoint():

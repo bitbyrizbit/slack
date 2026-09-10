@@ -28,12 +28,7 @@ import {
   listResolvedDisruptions,
 } from "@/lib/api";
 import { getAuthUser } from "@/lib/auth";
-
-interface Toast {
-  id: string;
-  message: string;
-  type: "success" | "error" | "info";
-}
+import { ToastContainer, ToastMessage } from "@/components/ToastNotification";
 
 export default function TripSettingsPage() {
   const params = useParams();
@@ -59,7 +54,7 @@ export default function TripSettingsPage() {
   const [copiedLink, setCopiedLink] = useState(false);
 
   // Toast notifications
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const addToast = useCallback((message: string, type: "success" | "error" | "info" = "success") => {
     const id = `${Date.now()}-${Math.random()}`;
@@ -439,29 +434,11 @@ export default function TripSettingsPage() {
         </section>
       </main>
 
-      {/* Toast Notifications */}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={`pointer-events-auto flex items-center justify-between gap-3 border px-4 py-2.5 text-xs shadow-lg max-w-sm ${
-              toast.type === "error"
-                ? "border-[#FCA5A5] bg-[#FEE2E2] text-[#991B1B]"
-                : toast.type === "info"
-                ? "border-[#BAE6FD] bg-[#E0F2FE] text-[#0369A1]"
-                : "border-[#86EFAC] bg-[#DCFCE7] text-[#15803D]"
-            }`}
-          >
-            <span>{toast.message}</span>
-            <button
-              onClick={() => removeToast(toast.id)}
-              className="font-bold opacity-70 hover:opacity-100"
-            >
-              ×
-            </button>
-          </div>
-        ))}
-      </div>
+      {/* Consolidated Toast Notifications */}
+      <ToastContainer
+        toasts={toasts}
+        onDismiss={removeToast}
+      />
     </div>
   );
 }

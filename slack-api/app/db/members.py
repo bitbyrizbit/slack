@@ -8,6 +8,7 @@ import psycopg2
 import psycopg2.extras
 from app.config import settings
 from app.models import ActivityFeedItem, Booking, BookingCreate, BookingUpdate, Dependency, DependencyCreate, DependencyUpdate, Disruption, DisruptionCreate, RecoveryCandidate, ScoringBreakdown, Trip, TripCreate, TripMember, User
+from app.db.core import get_db_connection, _to_uuid, _to_datetime
 
 def _row_to_trip_member(r: Any) -> TripMember:
     return TripMember(id=_to_uuid(r['id']), trip_id=_to_uuid(r['trip_id']), user_id=_to_uuid(r['user_id']) if r.get('user_id') else None, email=r['email'], name=r['name'], role=r['role'], invite_token=r.get('invite_token'), joined_at=_to_datetime(r['joined_at']) or datetime.now(timezone.utc))

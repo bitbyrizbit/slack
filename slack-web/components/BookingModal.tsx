@@ -185,7 +185,13 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           {/* Title */}
           <div>
             <label className="block font-medium text-[var(--foreground)] mb-1">
-              Title / Description *
+              {type === "flight"
+                ? "Flight Name / Title *"
+                : type === "hotel"
+                ? "Hotel Name *"
+                : type === "transfer"
+                ? "Transfer Name *"
+                : "Activity Name *"}
             </label>
             <input
               type="text"
@@ -193,7 +199,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               onChange={(e) => setTitle(e.target.value)}
               placeholder={
                 type === "flight"
-                  ? "e.g. Flight BA 178 JFK to LHR"
+                  ? "e.g. Flight BA 178"
                   : type === "hotel"
                   ? "e.g. Bloomsbury Boutique Hotel"
                   : type === "transfer"
@@ -205,65 +211,38 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             />
           </div>
 
-          {/* Vendor */}
-          <div>
-            <label className="block font-medium text-[var(--foreground)] mb-1">
-              {type === "flight" ? "Airline / Vendor" : type === "hotel" ? "Hotel Chain / Host" : "Vendor / Operator"}
-            </label>
-            <input
-              type="text"
-              value={vendor}
-              onChange={(e) => setVendor(e.target.value)}
-              placeholder="e.g. British Airways, Marriott, Uber"
-              className="w-full border border-[var(--border-strong)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
-            />
-          </div>
-
-          {/* Conditional Fields based on type */}
+          {/* Type-Specific Fields */}
           {type === "flight" && (
-            <div className="grid grid-cols-2 gap-3 border-l-2 border-[#2B5B84] pl-3 py-1 bg-[#F5F8FA]">
-              <div>
-                <label className="block font-medium text-[var(--foreground)] mb-1">Flight Number</label>
-                <input
-                  type="text"
-                  value={flightNumber}
-                  onChange={(e) => setFlightNumber(e.target.value)}
-                  placeholder="e.g. BA178"
-                  className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
-                />
+            <div className="space-y-3 border-l-2 border-[#2B5B84] pl-3 py-1 bg-[#F5F8FA]">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-medium text-[var(--foreground)] mb-1">Airline / Vendor</label>
+                  <input
+                    type="text"
+                    value={vendor}
+                    onChange={(e) => setVendor(e.target.value)}
+                    placeholder="e.g. British Airways"
+                    className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium text-[var(--foreground)] mb-1">Flight Number</label>
+                  <input
+                    type="text"
+                    value={flightNumber}
+                    onChange={(e) => setFlightNumber(e.target.value)}
+                    placeholder="e.g. BA178"
+                    className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
+                  />
+                </div>
               </div>
               <div>
-                <label className="block font-medium text-[var(--foreground)] mb-1">Terminal</label>
+                <label className="block font-medium text-[var(--foreground)] mb-1">Airport / Route</label>
                 <input
                   type="text"
-                  value={terminal}
-                  onChange={(e) => setTerminal(e.target.value)}
-                  placeholder="e.g. Terminal 5"
-                  className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
-                />
-              </div>
-            </div>
-          )}
-
-          {type === "transfer" && (
-            <div className="grid grid-cols-2 gap-3 border-l-2 border-[#2D6A4F] pl-3 py-1 bg-[#F4F9F6]">
-              <div>
-                <label className="block font-medium text-[var(--foreground)] mb-1">Pickup Location</label>
-                <input
-                  type="text"
-                  value={pickup}
-                  onChange={(e) => setPickup(e.target.value)}
-                  placeholder="e.g. LHR Terminal 5"
-                  className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block font-medium text-[var(--foreground)] mb-1">Dropoff Location</label>
-                <input
-                  type="text"
-                  value={dropoff}
-                  onChange={(e) => setDropoff(e.target.value)}
-                  placeholder="e.g. Paddington Station"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g. JFK to LHR"
                   className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
                 />
               </div>
@@ -271,50 +250,87 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           )}
 
           {type === "hotel" && (
-            <div className="border-l-2 border-[#885434] pl-3 py-1 bg-[#FAF6F2]">
-              <label className="block font-medium text-[var(--foreground)] mb-1">Room / Accommodation Type</label>
-              <input
-                type="text"
-                value={roomType}
-                onChange={(e) => setRoomType(e.target.value)}
-                placeholder="e.g. Deluxe King, Suite"
-                className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
-              />
+            <div className="space-y-3 border-l-2 border-[#885434] pl-3 py-1 bg-[#FAF6F2]">
+              <div>
+                <label className="block font-medium text-[var(--foreground)] mb-1">Hotel Location / City</label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g. Bloomsbury, London"
+                  className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block font-medium text-[var(--foreground)] mb-1">Room Type (Optional)</label>
+                <input
+                  type="text"
+                  value={roomType}
+                  onChange={(e) => setRoomType(e.target.value)}
+                  placeholder="e.g. Deluxe King"
+                  className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
+                />
+              </div>
+            </div>
+          )}
+
+          {type === "transfer" && (
+            <div className="space-y-3 border-l-2 border-[#2D6A4F] pl-3 py-1 bg-[#F4F9F6]">
+              <div>
+                <label className="block font-medium text-[var(--foreground)] mb-1">Operator / Vendor</label>
+                <input
+                  type="text"
+                  value={vendor}
+                  onChange={(e) => setVendor(e.target.value)}
+                  placeholder="e.g. Heathrow Express, Uber"
+                  className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-medium text-[var(--foreground)] mb-1">Pickup Location</label>
+                  <input
+                    type="text"
+                    value={pickup}
+                    onChange={(e) => setPickup(e.target.value)}
+                    placeholder="e.g. LHR Terminal 5"
+                    className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium text-[var(--foreground)] mb-1">Dropoff Location</label>
+                  <input
+                    type="text"
+                    value={dropoff}
+                    onChange={(e) => setDropoff(e.target.value)}
+                    placeholder="e.g. Paddington Station"
+                    className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
+                  />
+                </div>
+              </div>
             </div>
           )}
 
           {type === "activity" && (
-            <div className="border-l-2 border-[#6D3A6D] pl-3 py-1 bg-[#FAF4FA]">
-              <label className="block font-medium text-[var(--foreground)] mb-1">Ticket / Tour Tier</label>
-              <input
-                type="text"
-                value={ticketType}
-                onChange={(e) => setTicketType(e.target.value)}
-                placeholder="e.g. Priority Admission, Guided"
-                className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
-              />
+            <div className="space-y-3 border-l-2 border-[#6D3A6D] pl-3 py-1 bg-[#FAF4FA]">
+              <div>
+                <label className="block font-medium text-[var(--foreground)] mb-1">Activity Location</label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g. Great Russell St, London"
+                  className="w-full border border-[var(--border-strong)] bg-[var(--card)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
+                />
+              </div>
             </div>
           )}
-
-          {/* Location */}
-          <div>
-            <label className="block font-medium text-[var(--foreground)] mb-1">
-              {type === "flight" ? "Airport / Route" : type === "hotel" ? "Address / City" : "Location"}
-            </label>
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="e.g. London Heathrow Airport, Bloomsbury, Trafalgar Square"
-              className="w-full border border-[var(--border-strong)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
-            />
-          </div>
 
           {/* Time Window */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block font-medium text-[var(--foreground)] mb-1">
-                {type === "hotel" ? "Check-in Time *" : "Departure / Start Time *"}
+                {type === "hotel" ? "Check-in Time *" : type === "activity" ? "Start Time *" : "Departure / Start Time *"}
               </label>
               <input
                 type="datetime-local"
@@ -326,7 +342,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             </div>
             <div>
               <label className="block font-medium text-[var(--foreground)] mb-1">
-                {type === "hotel" ? "Check-out Time *" : "Arrival / End Time *"}
+                {type === "hotel" ? "Check-out Time *" : type === "activity" ? "End Time *" : "Arrival / End Time *"}
               </label>
               <input
                 type="datetime-local"

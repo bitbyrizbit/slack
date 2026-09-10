@@ -8,6 +8,8 @@ import psycopg2
 import psycopg2.extras
 from app.config import settings
 from app.models import ActivityFeedItem, Booking, BookingCreate, BookingUpdate, Dependency, DependencyCreate, DependencyUpdate, Disruption, DisruptionCreate, RecoveryCandidate, ScoringBreakdown, Trip, TripCreate, TripMember, User
+from app.db.core import get_db_connection, _to_uuid, _to_datetime, _to_float, _to_dict, _to_bool
+from app.db.bookings import db_get_booking, db_update_booking, db_delete_booking
 
 def _row_to_disruption(r: Any) -> Disruption:
     return Disruption(id=_to_uuid(r['id']), trip_id=_to_uuid(r['trip_id']), booking_id=_to_uuid(r['booking_id']), disruption_type=r['disruption_type'], delay_minutes=int(r['delay_minutes']), description=r.get('description'), triggered_at=_to_datetime(r['triggered_at']) or datetime.now(timezone.utc), resolved=_to_bool(r['resolved']), resolved_at=_to_datetime(r['resolved_at']) if r.get('resolved_at') else None)

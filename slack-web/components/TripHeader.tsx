@@ -23,6 +23,7 @@ import {
 import { Trip, TripResilienceResponse, PresenceUser, AuthUser } from "@/lib/types";
 import { PresenceAvatars } from "./PresenceAvatars";
 import { NotificationCenter } from "./NotificationCenter";
+import { ResilienceRing } from "./ResilienceRing";
 
 interface TripHeaderProps {
   currentTrip: Trip | null;
@@ -149,6 +150,24 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
             >
               <Settings className="h-3.5 w-3.5" />
             </Link>
+          )}
+
+          {/* Real-time Trip Resilience Score Ring */}
+          {resilience && (
+            <div
+              className="flex items-center gap-1.5 pl-2 border-l border-[var(--border)] shrink-0"
+              title={`Resilience Score: ${resilience.score}/100 (${resilience.grade})`}
+            >
+              <ResilienceRing
+                score={resilience.score}
+                grade={resilience.grade}
+                size="sm"
+                showLabel={false}
+              />
+              <span className="text-[11px] font-bold text-[var(--foreground)] hidden lg:inline font-mono">
+                {resilience.score}%
+              </span>
+            </div>
           )}
         </div>
 
@@ -356,9 +375,13 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
         {currentUser && (
           <div className="flex items-center gap-2 border-l border-[var(--border)] pl-2.5 ml-0.5 shrink-0">
             <div className="text-right hidden xl:block">
-              <div className="text-xs font-semibold text-[var(--foreground)] leading-tight truncate max-w-[110px]">
+              <Link
+                href="/profile"
+                className="text-xs font-semibold text-[var(--foreground)] hover:text-[#2B5B84] hover:underline leading-tight truncate max-w-[110px] block"
+                title="Edit Profile"
+              >
                 {currentUser.display_name}
-              </div>
+              </Link>
               <div className="text-[10px] text-[#8E887D] leading-tight">
                 {isViewer ? "Viewer" : "Active"}
               </div>

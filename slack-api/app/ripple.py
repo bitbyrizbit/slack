@@ -92,28 +92,20 @@ def classify_node_severity(
     new_status: EdgeStatus,
     min_buffer_minutes: int,
 ) -> Tuple[SeverityType, str]:
-    # Strongly negative slack indicates a missed connection
-    if new_slack < -15:
+    if new_slack < 0:
         severity: SeverityType = "missed"
-        if new_slack < 0:
-            deficit = abs(int(new_slack))
-            explanation = (
-                f"{booking_title} will now be missed. Connection required {min_buffer_minutes}m "
-                f"buffer, but the schedule has slipped by {deficit}m past the limit "
-                f"(slack dropped from {int(prev_slack)}m to {int(new_slack)}m)."
-            )
-        else:
-            explanation = f"{booking_title} is critically delayed and will be missed."
-    elif new_slack < 0 or (prev_status == "safe" and new_status == "tight") or (new_slack < prev_slack and new_status == "tight"):
+        explanation = (
+            f"Your {booking_title} will now be missed - it needed {min_buffer_minutes} minutes and only has {int(new_slack)}."
+        )
+    elif new_status == "tight" or new_slack <= 30:
         severity = "at_risk"
         explanation = (
-            f"{booking_title} is at risk. Buffer has tightened to {int(new_slack)}m "
-            f"beyond the required {min_buffer_minutes}m buffer (previously {int(prev_slack)}m slack)."
+            f"Your {booking_title} is at risk - it needed {min_buffer_minutes} minutes and only has {int(new_slack)} minutes of buffer remaining."
         )
     else:
         severity = "unaffected"
         explanation = (
-            f"{booking_title} remains unaffected with {int(new_slack)}m of buffer buffer."
+            f"Your {booking_title} remains unaffected with {int(new_slack)} minutes of buffer to spare."
         )
 
     return severity, explanation

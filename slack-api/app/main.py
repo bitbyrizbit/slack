@@ -10,12 +10,13 @@ from app.routers.disruptions import router as disruptions_router
 from app.routers.members import router as members_router
 from app.routers.core import router as core_router
 
+from app.auth import hash_password
+from app.database import db_seed_demo_users
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Seed demo users on startup (idempotent — safe to call every time)."""
     try:
-        from app.auth import hash_password
-        from app.database import db_seed_demo_users
         db_seed_demo_users(hash_password)
     except Exception as e:
         print(f"[startup] Warning: Could not seed demo users: {e}")

@@ -3,6 +3,7 @@
 import React from "react";
 import { Clock, MapPin, DollarSign, Edit, Trash2, ArrowRight } from "lucide-react";
 import { GraphEdge, GraphNode } from "@/lib/types";
+import { formatDateTime } from "@/lib/dateUtils";
 
 interface ListViewProps {
   nodes: GraphNode[];
@@ -49,20 +50,7 @@ export const ListView: React.FC<ListViewProps> = ({
     (a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
   );
 
-  const formatDateTime = (isoStr: string) => {
-    try {
-      const d = new Date(isoStr);
-      return d.toLocaleString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return isoStr;
-    }
-  };
+
 
   if (sortedNodes.length === 0) {
     return (

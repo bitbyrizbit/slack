@@ -7,11 +7,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Query, status
 from fastapi.responses import StreamingResponse
 from app.auth import create_jwt, get_current_user, get_current_user_optional, hash_password, verify_password
 from app.demo import seed_standard_demo_trip, seed_stress_test_trip, fetch_live_airport_weather, AIRPORT_COORDINATES
-from app.database import db_accept_invite, db_add_activity_log, db_add_trip_member, db_apply_recovery, db_create_booking, db_create_dependency, db_create_disruption, db_create_trip, db_create_user, db_delete_booking, db_delete_dependency, db_get_booking, db_get_dependency, db_get_disruption, db_get_invite_by_token, db_get_member_role, db_get_recovery_candidate, db_get_recovery_candidates_by_disruption, db_get_trip, db_get_trip_member, db_get_user_by_email_with_hash, db_get_user_role_for_trip, db_list_active_disruptions, db_list_activity_feed, db_list_bookings, db_list_dependencies, db_list_trip_members, db_list_trips, db_list_trips_for_user, db_remove_trip_member, db_resolve_disruption, db_save_recovery_candidates, db_update_booking, db_update_dependency, db_update_trip_name, db_delete_trip
+from app.database import db_accept_invite, db_add_activity_log, db_add_trip_member, db_apply_recovery, db_create_booking, db_create_dependency, db_create_disruption, db_create_trip, db_create_user, db_delete_booking, db_delete_dependency, db_dismiss_suggestion, db_list_dismissed_suggestions, db_get_booking, db_get_dependency, db_get_disruption, db_get_invite_by_token, db_get_member_role, db_get_recovery_candidate, db_get_recovery_candidates_by_disruption, db_get_trip, db_get_trip_member, db_get_user_by_email_with_hash, db_get_user_role_for_trip, db_list_active_disruptions, db_list_activity_feed, db_list_bookings, db_list_dependencies, db_list_trip_members, db_list_trips, db_list_trips_for_user, db_remove_trip_member, db_resolve_disruption, db_save_recovery_candidates, db_update_booking, db_update_dependency, db_update_trip_name, db_delete_trip
 from app.events import event_bus
-from app.graph import build_trip_graph
+from app.graph import build_trip_graph, compute_trip_resilience
 from app.heuristics import suggest_dependencies_for_booking
-from app.models import AcceptInviteRequest, AcceptInviteResponse, ActivityFeedItem, ActivityFeedListResponse, AuthResponse, Booking, BookingCreate, BookingUpdate, BookingWithSuggestions, Dependency, DependencyCreate, DependencyUpdate, Disruption, DisruptionCreate, DisruptionResolveResponse, GraphResponse, PresenceUser, RecoveryApplyResponse, RecoveryCandidate, RecoveryOptionsResponse, RippleResponse, RoleType, SuggestedDependency, ThinConnection, Trip, TripCreate, TripMember, TripMemberInviteRequest, TripMemberInviteResponse, TripPresenceResponse, TripResilienceResponse, UserCreate, UserLogin
+from app.models import AcceptInviteRequest, AcceptInviteResponse, ActivityFeedItem, ActivityFeedListResponse, AuthResponse, Booking, BookingCreate, BookingUpdate, BookingWithSuggestions, Dependency, DependencyCreate, DependencyUpdate, Disruption, DisruptionCreate, DisruptionResolveResponse, DismissSuggestionRequest, GraphResponse, PresenceUser, RecoveryApplyResponse, RecoveryCandidate, RecoveryOptionsResponse, RippleResponse, RoleType, SuggestedDependency, ThinConnection, Trip, TripCreate, TripMember, TripMemberInviteRequest, TripMemberInviteResponse, TripPresenceResponse, TripResilienceResponse, UserCreate, UserLogin
 from app.ripple import compute_effective_bookings, compute_ripple_impact
 from app.recovery import generate_raw_recovery_candidates, enrich_with_groq_or_fallback
 router = APIRouter()
@@ -47,7 +47,11 @@ def verify_trip_mutation_permission(trip_id: UUID, current_user: dict):
 def create_trip(trip_in: TripCreate, current_user: dict=Depends(get_current_user)):
     """Create a trip owned by the authenticated user."""
     trip_in.owner_id = UUID(current_user['user_id'])
-    return db_create_trip(trip_in)
+    return db_create_trip(
+        trip_in,
+        creator_name=current_user.get('display_name'),
+        creator_email=current_user.get('email'),
+    )
 
 @router.get('/trips', response_model=List[Trip])
 def list_trips(current_user: dict=Depends(get_current_user)):
@@ -82,7 +86,7 @@ def delete_trip(trip_id: UUID, current_user: dict=Depends(get_current_user)):
     return None
 
 @router.get('/trips/{trip_id}/graph', response_model=GraphResponse)
-def get_trip_graph(trip_id: UUID):
+def get_trip_graph(trip_id: UUID, current_user: Optional[dict]=Depends(get_current_user_optional)):
     trip = db_get_trip(trip_id)
     if not trip:
         raise HTTPException(status_code=404, detail='Trip not found')
@@ -90,7 +94,22 @@ def get_trip_graph(trip_id: UUID):
     dependencies = db_list_dependencies(trip_id)
     active_disruptions = db_list_active_disruptions(trip_id)
     effective_bookings = compute_effective_bookings(bookings, active_disruptions)
-    return build_trip_graph(trip_id=str(trip.id), trip_name=trip.name, bookings=effective_bookings, dependencies=dependencies)
+
+    my_role = None
+    if current_user:
+        user_id = UUID(current_user['user_id'])
+        if trip.owner_id and str(trip.owner_id) == str(user_id):
+            my_role = 'owner'
+        else:
+            my_role = db_get_user_role_for_trip(trip_id, user_id)
+
+    return build_trip_graph(
+        trip_id=str(trip.id),
+        trip_name=trip.name,
+        bookings=effective_bookings,
+        dependencies=dependencies,
+        my_role=my_role,
+    )
 
 @router.get('/trips/{trip_id}/suggestions', response_model=List[SuggestedDependency])
 def get_trip_suggestions(trip_id: UUID):
@@ -99,13 +118,38 @@ def get_trip_suggestions(trip_id: UUID):
         raise HTTPException(status_code=404, detail='Trip not found')
     bookings = db_list_bookings(trip_id)
     dependencies = db_list_dependencies(trip_id)
+    dismissed_pairs = set(db_list_dismissed_suggestions(trip_id))
     all_suggestions: List[SuggestedDependency] = []
     for b in bookings:
-        suggs = suggest_dependencies_for_booking(target_booking=b, existing_bookings=bookings, existing_dependencies=dependencies)
+        suggs = suggest_dependencies_for_booking(
+            target_booking=b,
+            existing_bookings=bookings,
+            existing_dependencies=dependencies,
+            dismissed_pairs=dismissed_pairs,
+        )
         for s in suggs:
             if not any((existing.from_booking_id == s.from_booking_id and existing.to_booking_id == s.to_booking_id for existing in all_suggestions)):
                 all_suggestions.append(s)
     return all_suggestions
+
+@router.post('/trips/{trip_id}/suggestions/dismiss', status_code=status.HTTP_200_OK)
+def dismiss_trip_suggestion(
+    trip_id: UUID,
+    req: DismissSuggestionRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    verify_trip_mutation_permission(trip_id, current_user)
+    trip = db_get_trip(trip_id)
+    if not trip:
+        raise HTTPException(status_code=404, detail='Trip not found')
+    user_id = UUID(current_user['user_id']) if current_user.get('user_id') else None
+    db_dismiss_suggestion(
+        trip_id=trip_id,
+        from_booking_id=req.from_booking_id,
+        to_booking_id=req.to_booking_id,
+        dismissed_by=user_id,
+    )
+    return {"status": "dismissed", "from": str(req.from_booking_id), "to": str(req.to_booking_id)}
 
 @router.get('/trips/{trip_id}/resilience', response_model=TripResilienceResponse)
 def get_trip_resilience(trip_id: UUID):
@@ -117,32 +161,11 @@ def get_trip_resilience(trip_id: UUID):
     active_disruptions = db_list_active_disruptions(trip_id)
     effective_bookings = compute_effective_bookings(bookings, active_disruptions)
     graph = build_trip_graph(trip_id=str(trip.id), trip_name=trip.name, bookings=effective_bookings, dependencies=dependencies)
-    total_edges = len(graph.edges)
-    safe_edges = 0
-    tight_edges = 0
-    violated_edges = 0
-    thin_conns: List[ThinConnection] = []
-    booking_map = {str(b.id): b.title for b in effective_bookings}
-    for edge in graph.edges:
-        if edge.status == 'violated':
-            violated_edges += 1
-        elif edge.status == 'tight':
-            tight_edges += 1
-        else:
-            safe_edges += 1
-        if edge.status in ('tight', 'violated') or edge.slack_minutes <= 30:
-            thin_conns.append(ThinConnection(from_booking_id=edge.from_node, from_booking_title=booking_map.get(edge.from_node, 'From Booking'), to_booking_id=edge.to_node, to_booking_title=booking_map.get(edge.to_node, 'To Booking'), min_buffer_minutes=edge.min_buffer_minutes, actual_gap_minutes=edge.actual_gap_minutes, slack_minutes=edge.slack_minutes, status=edge.status))
-    penalty = tight_edges * 15 + violated_edges * 35
-    score = max(0, 100 - penalty)
-    if total_edges == 0:
-        score = 100
-    if score >= 80:
-        grade = 'Robust'
-    elif score >= 50:
-        grade = 'Caution'
-    else:
-        grade = 'Critical'
-    return TripResilienceResponse(trip_id=str(trip_id), score=score, grade=grade, total_edges=total_edges, safe_edges=safe_edges, tight_edges=tight_edges, violated_edges=violated_edges, thin_connections=thin_conns)
+    return compute_trip_resilience(
+        trip_id=str(trip_id),
+        graph=graph,
+        effective_bookings=effective_bookings,
+    )
 
 @router.get('/trips/{trip_id}/events')
 async def stream_trip_events(trip_id: UUID, request: Request, current_user: dict=Depends(get_current_user)):
@@ -179,13 +202,7 @@ def record_trip_presence(trip_id: UUID, user: PresenceUser):
     event_bus.broadcast_sync(str(trip_id), 'PRESENCE_UPDATED', {'active_users': [u.model_dump(mode='json') for u in active]})
     return TripPresenceResponse(trip_id=str(trip_id), active_users=active)
 
-@router.get('/trips/{trip_id}/presence', response_model=TripPresenceResponse)
-def get_trip_presence(trip_id: UUID):
-    trip = db_get_trip(trip_id)
-    if not trip:
-        raise HTTPException(status_code=404, detail='Trip not found')
-    active = event_bus.get_active_presence(str(trip_id))
-    return TripPresenceResponse(trip_id=str(trip_id), active_users=active)
+
 
 @router.get('/trips/{trip_id}/activity', response_model=ActivityFeedListResponse)
 def get_trip_activity(trip_id: UUID, limit: int=50):

@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID, uuid4
 import httpx
 
+from app.config import settings
 from app.models import (
     Booking,
     CandidateType,
@@ -21,25 +22,65 @@ def parse_cancellation_policy(
     cost: Optional[float],
     hours_before_departure: float = 48.0,
 ) -> Tuple[float, bool]:
-    # Returns (refund_amount, is_refund_eligible)
+    """
+    Derives refund amount and eligibility from free-text cancellation policy.
+
+    PHRASING PATTERNS SUPPORTED:
+      1. "Non-refundable within <X>h / <X> days" (e.g., "Non-refundable within 24h of departure", "Non-refundable within 12h"):
+         - If hours_before_departure < cutoff: 0% refund (strictly non-refundable within penalty window)
+         - If hours_before_departure >= cutoff: 100% refund (outside penalty window)
+      2. Unconditional non-refundable ("Non-refundable", "No refund", "Strictly non-refundable"):
+         - 0% refund, not eligible
+      3. "Free cancellation until <X>h/days" or "Full refund up to <X>h/days":
+         - If hours_before_departure >= cutoff: 100% refund
+         - If hours_before_departure < cutoff: 25% partial refund
+      4. Unconditional free cancellation ("Free cancellation", "Fully refundable", "Full refund if weather..."):
+         - 100% refund
+      5. Flexible waivers & exchange policies ("Flexible rebooking ticket with airline fee waiver", "Standard rail exchange policy"):
+         - 80% partial refund for airline waivers, 50% for standard exchanges
+      6. Generic "Refundable":
+         - 80% partial refund
+
+    PHRASING PATTERNS NOT SUPPORTED (EXPLICIT LIMITATIONS):
+      - Multi-tiered percentage schedules (e.g., "75% at 7d, 50% at 3d, 25% at 24h") -> defaults to 50% partial refund.
+      - Explicit monetary deductibles (e.g., "Full refund minus $50 processing fee") -> defaults to standard percentage.
+      - Non-English / unstructured free-text -> defaults to 50% partial refund.
+    """
     if not cost or cost <= 0:
         return 0.0, False
 
     if not policy_str:
-        # Default policy: 50% partial refund
+        # Default fallback policy: 50% partial refund
         return round(cost * 0.5, 2), True
 
     policy_lower = policy_str.lower().strip()
 
+    # Pattern 1: "Non-refundable within <X> hours / days"
+    if "non-refundable within" in policy_lower or "non refundable within" in policy_lower:
+        hours_match = re.search(r"within\s+(\d+)\s*(hour|hr|h)", policy_lower)
+        if hours_match:
+            cutoff_hours = float(hours_match.group(1))
+            if hours_before_departure >= cutoff_hours:
+                return round(cost, 2), True
+            return 0.0, False
+
+        days_match = re.search(r"within\s+(\d+)\s*(day|d)", policy_lower)
+        if days_match:
+            cutoff_hours = float(days_match.group(1)) * 24.0
+            if hours_before_departure >= cutoff_hours:
+                return round(cost, 2), True
+            return 0.0, False
+
+        # Fallback if "within" is present without explicit digits
+        return 0.0, False
+
+    # Pattern 2: Unconditional non-refundable
     if "non-refundable" in policy_lower or "non refundable" in policy_lower or "no refund" in policy_lower:
         return 0.0, False
 
-    if "free cancellation" in policy_lower or "fully refundable" in policy_lower or "full refund" in policy_lower:
-        return round(cost, 2), True
-
-    # Check for "refundable up to X hours/days prior"
+    # Pattern 3: "Free cancellation until / Full refund up to <X> hours / days"
     hours_match = re.search(r"(\d+)\s*(hour|hr|h)", policy_lower)
-    if hours_match:
+    if hours_match and ("until" in policy_lower or "up to" in policy_lower or "prior" in policy_lower or "before" in policy_lower):
         cutoff_hours = float(hours_match.group(1))
         if hours_before_departure >= cutoff_hours:
             return round(cost, 2), True
@@ -47,14 +88,25 @@ def parse_cancellation_policy(
             return round(cost * 0.25, 2), True
 
     days_match = re.search(r"(\d+)\s*(day|d)", policy_lower)
-    if days_match:
+    if days_match and ("until" in policy_lower or "up to" in policy_lower or "prior" in policy_lower or "before" in policy_lower):
         cutoff_hours = float(days_match.group(1)) * 24.0
         if hours_before_departure >= cutoff_hours:
             return round(cost, 2), True
         else:
             return round(cost * 0.25, 2), True
 
-    # Generic refundable: 80% refund
+    # Pattern 4: Unconditional full refund / free cancellation / weather waivers
+    if "free cancellation" in policy_lower or "fully refundable" in policy_lower or "full refund" in policy_lower:
+        return round(cost, 2), True
+
+    # Pattern 5: Fee waiver / flexible ticket / standard exchange policy
+    if "fee waiver" in policy_lower or "flexible" in policy_lower:
+        return round(cost * 0.8, 2), True
+
+    if "exchange policy" in policy_lower or "rail exchange" in policy_lower:
+        return round(cost * 0.5, 2), True
+
+    # Pattern 6: Generic refundable
     if "refundable" in policy_lower:
         return round(cost * 0.8, 2), True
 
@@ -394,7 +446,7 @@ def generate_raw_recovery_candidates(
 
 def enrich_with_groq_or_fallback(candidates: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     # Attempts Groq API call with strict narrow prompt; gracefully uses deterministic fallback if anything fails
-    groq_api_key = os.environ.get("GROQ_API_KEY")
+    groq_api_key = os.environ.get("GROQ_API_KEY") or settings.groq_api_key
     if not groq_api_key:
         # Return candidates with their deterministic fallback sentences
         return candidates
@@ -417,7 +469,8 @@ def enrich_with_groq_or_fallback(candidates: List[Dict[str, Any]]) -> List[Dict[
         system_prompt = (
             "You are a travel concierge. Given scored recovery options, generate exactly ONE "
             "spoken sentence per option explaining the choice in plain human terms. "
-            "You MUST return a JSON dictionary mapping option 'id' to the sentence string. "
+            "You MUST respond with a valid JSON object mapping option 'id' to the sentence string, e.g. {\"option_id\": \"explanation\"}. "
+            "Do not include markdown blocks or any other text outside the JSON object. "
             "Do NOT rank options, do NOT change any numbers, and do NOT add options."
         )
 
@@ -428,18 +481,20 @@ def enrich_with_groq_or_fallback(candidates: List[Dict[str, Any]]) -> List[Dict[
             "Content-Type": "application/json",
         }
 
+        groq_model = os.environ.get("GROQ_MODEL") or getattr(settings, "groq_model", "openai/gpt-oss-20b")
+
         request_body = {
-            "model": "llama-3.3-70b-versatile",
+            "model": groq_model,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_content},
             ],
             "temperature": 0.2,
-            "max_tokens": 250,
+            "max_tokens": 1000,
             "response_format": {"type": "json_object"},
         }
 
-        with httpx.Client(timeout=3.0) as client:
+        with httpx.Client(timeout=8.0) as client:
             resp = client.post(
                 "https://api.groq.com/openai/v1/chat/completions",
                 headers=headers,
