@@ -18,6 +18,11 @@ async def lifespan(app: FastAPI):
     """Seed demo users on startup (idempotent — safe to call every time)."""
     try:
         db_seed_demo_users(hash_password)
+        from app.database import get_db_connection
+        with get_db_connection() as conn:
+            conn.cursor.execute("DELETE FROM trips WHERE name = 'Alpine Odyssey (Zurich ✈ Geneva ✈ Chamonix)';")
+            conn.conn.commit()
+            print('[startup] Dropped legacy demo trips.')
     except Exception as e:
         print(f"[startup] Warning: Could not seed demo users: {e}")
     yield

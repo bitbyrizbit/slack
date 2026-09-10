@@ -34,9 +34,9 @@ export const ResilienceRing: React.FC<ResilienceRingProps> = ({
   let badgeBorder = "#A7F3D0";
 
   if (clampedScore < 50) {
-    strokeColor = "#DC2626"; // Red (Critical)
+    strokeColor = "var(--foreground)"; // Red (Critical)
     badgeBg = "#FEF2F2";
-    badgeText = "#991B1B";
+    badgeText = "var(--foreground)";
     badgeBorder = "#FECACA";
   } else if (clampedScore < 80) {
     strokeColor = "var(--accent)"; // Amber (Caution)

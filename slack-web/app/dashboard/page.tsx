@@ -1,5 +1,6 @@
 "use client";
 
+import SlackLogo from "@/components/SlackLogo";
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -146,14 +147,9 @@ export default function DashboardPage() {
       <header className="border-b border-[var(--border)] bg-[var(--card)] px-6 py-3.5 sticky top-0 z-40">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center border border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]">
-                <Compass className="h-5 w-5" />
-              </div>
-              <span className="font-serif-heading text-xl font-bold tracking-tight text-[var(--foreground)]">
-                Slack
-              </span>
-            </Link>
+              <Link href="/dashboard" className="flex items-center gap-2">
+                <SlackLogo className="scale-[0.8] origin-left" />
+              </Link>
             <div className="h-4 w-px bg-[var(--border)] hidden sm:block" />
             <span className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)] hidden sm:inline">
               Dashboard
@@ -196,7 +192,7 @@ export default function DashboardPage() {
                 <button
                   onClick={handleLogout}
                   title="Sign out"
-                  className="flex items-center gap-1 border border-[var(--border-strong)] bg-[var(--card)] p-1.5 text-[var(--muted-foreground)] hover:bg-[#FEE2E2] hover:text-[#991B1B] hover:border-[#FCA5A5] transition-colors"
+                  className="flex items-center gap-1 border border-[var(--border-strong)] bg-[var(--card)] p-1.5 text-[var(--muted-foreground)] hover:bg-[var(--background)] hover:text-[var(--foreground)] hover:border-[var(--foreground)] transition-colors"
                 >
                   <LogOut className="h-3.5 w-3.5" />
                 </button>
@@ -279,7 +275,7 @@ export default function DashboardPage() {
                   onClick={() => router.push(`/trips/${trip.id}`)}
                   className={`group relative flex flex-col justify-between border bg-[var(--card)] p-5 shadow-xs transition-all hover:shadow-md cursor-pointer ${
                     isAtRisk
-                      ? "border-[#FCA5A5] border-l-4 border-l-[#DC2626] bg-[#FFFBFB]"
+                      ? "border-[var(--foreground)] border-l-4 border-l-[var(--foreground)] bg-[#FFFBFB]"
                       : isCaution
                       ? "border-[#FDE68A] border-l-4 border-l-[#D97706] bg-[#FFFEFA]"
                       : "border-[var(--border-strong)] border-l-4 border-l-[#059669] hover:border-[var(--foreground)]"
@@ -357,7 +353,7 @@ export default function DashboardPage() {
 
                       <button
                         onClick={(e) => handleDeleteTrip(e, trip.id, trip.name)}
-                        className="p-1.5 border border-[var(--border-strong)] bg-[var(--card)] text-[var(--muted-foreground)] hover:text-[#991B1B] hover:bg-[#FEE2E2] hover:border-[#FCA5A5] transition-colors"
+                        className="p-1.5 border border-[var(--border-strong)] bg-[var(--card)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--background)] hover:border-[var(--foreground)] transition-colors"
                         title="Delete Trip"
                       >
                         <Trash2 className="h-3.5 w-3.5" />

@@ -113,7 +113,7 @@ export const TriggerDisruptionModal: React.FC<TriggerDisruptionModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center bg-[#B91C1C] text-[var(--background)]">
+            <div className="flex h-7 w-7 items-center justify-center bg-[var(--foreground)] text-[var(--background)]">
               <AlertTriangle className="h-4 w-4" />
             </div>
             <h2 className="font-serif-heading text-lg font-bold text-[var(--foreground)]">
@@ -130,7 +130,7 @@ export const TriggerDisruptionModal: React.FC<TriggerDisruptionModalProps> = ({
         </div>
 
         {error && (
-          <div className="mt-3 border border-[#FCA5A5] bg-[#FEE2E2] p-2 text-xs text-[#991B1B]">
+          <div className="mt-3 border border-[var(--foreground)] bg-[var(--background)] p-2 text-xs text-[var(--foreground)]">
             {error}
           </div>
         )}
@@ -216,7 +216,7 @@ export const TriggerDisruptionModal: React.FC<TriggerDisruptionModalProps> = ({
                       onClick={() => setDelayMinutes(mins)}
                       className={`border px-2 py-1.5 text-[10px] font-medium transition-colors ${
                         delayMinutes === mins
-                          ? "border-[#B91C1C] bg-[#FEE2E2] text-[#991B1B]"
+                          ? "border-[var(--foreground)] bg-[var(--background)] text-[var(--foreground)]"
                           : "border-[var(--border-strong)] bg-[var(--card)] text-[var(--muted-foreground)] hover:border-[var(--foreground)]"
                       }`}
                     >
@@ -294,7 +294,7 @@ export const TriggerDisruptionModal: React.FC<TriggerDisruptionModalProps> = ({
                             </div>
                             <div className="mt-1.5 flex items-center justify-between text-[11px] border-t border-[#BAE6FD] pt-1 text-[#0369A1]">
                               <span>Suggested Ground Stop:</span>
-                              <span className="font-bold text-[#DC2626]">+{currentW.suggested_delay_minutes} mins</span>
+                              <span className="font-bold text-[var(--foreground)]">+{currentW.suggested_delay_minutes} mins</span>
                             </div>
                           </div>
                         );
@@ -337,7 +337,7 @@ export const TriggerDisruptionModal: React.FC<TriggerDisruptionModalProps> = ({
                   (d) => (d.booking_id === selectedBookingId || (d as any).booking_id === selectedBookingId) && !d.resolved
                 )
               }
-              className="border border-[#B91C1C] bg-[#B91C1C] px-4 py-1.5 font-medium text-[var(--background)] hover:bg-[#991B1B] disabled:opacity-50 transition-colors"
+              className="border border-[var(--foreground)] bg-[var(--foreground)] px-4 py-1.5 font-medium text-[var(--background)] hover:bg-[var(--foreground)] disabled:opacity-50 transition-colors"
             >
               {isSubmitting
                 ? "Simulating Ripple..."

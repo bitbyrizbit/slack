@@ -65,7 +65,7 @@ export const DemoControlBar: React.FC<DemoControlBarProps> = ({
             <span
               className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
                 isAlpineDemo && activeDisruptionsCount === 0
-                  ? "bg-[#FEE2E2] text-[#991B1B] ring-1 ring-[#B91C1C]"
+                  ? "bg-[var(--background)] text-[var(--foreground)] ring-1 ring-[var(--foreground)]"
                   : activeDisruptionsCount > 0
                   ? "text-[#8E887D] line-through"
                   : "text-[#8E887D]"
@@ -103,10 +103,10 @@ export const DemoControlBar: React.FC<DemoControlBarProps> = ({
           <button
             onClick={onTriggerSampleDisruption}
             disabled={isLoading || !currentTrip}
-            className="flex items-center gap-1.5 border border-[#B91C1C] bg-[#FFF5F5] px-3 py-1 text-xs font-semibold text-[#991B1B] hover:bg-[#FEE2E2] hover:border-[#991B1B] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 border border-[var(--foreground)] bg-[#FFF5F5] px-3 py-1 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--background)] hover:border-[var(--foreground)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
             title="Pre-filled Flight LX 354 (+60m delay): triggers ripple, breaks shuttle connection (-45m), drops score to Critical"
           >
-            <Zap className="h-3.5 w-3.5 text-[#DC2626]" />
+            <Zap className="h-3.5 w-3.5 text-[var(--foreground)]" />
             <span>Trigger Sample Disruption</span>
           </button>
 

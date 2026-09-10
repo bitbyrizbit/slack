@@ -42,7 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="flex h-full w-full min-h-[300px] flex-col items-center justify-center p-8 text-center bg-[var(--background)]">
           <div className="max-w-md border border-[var(--border)] bg-[var(--card)] p-8 shadow-sm">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#FEE2E2] text-[#991B1B] mb-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--background)] text-[var(--foreground)] mb-4">
               <AlertOctagon className="h-6 w-6" />
             </div>
 
@@ -56,7 +56,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </p>
 
             {this.state.error && (
-              <div className="mt-4 max-h-24 overflow-auto rounded bg-[#F7F4EE] p-2 text-left text-[11px] font-mono text-[#991B1B]">
+              <div className="mt-4 max-h-24 overflow-auto rounded bg-[#F7F4EE] p-2 text-left text-[11px] font-mono text-[var(--foreground)]">
                 {this.state.error.message}
               </div>
             )}

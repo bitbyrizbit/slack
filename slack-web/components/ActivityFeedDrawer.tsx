@@ -63,7 +63,7 @@ export const ActivityFeedDrawer: React.FC<ActivityFeedDrawerProps> = ({
       case "BOOKING_UPDATED":
         return <Clock className="h-3.5 w-3.5 text-[#2563EB]" />;
       case "BOOKING_DELETED":
-        return <Trash2 className="h-3.5 w-3.5 text-[#DC2626]" />;
+        return <Trash2 className="h-3.5 w-3.5 text-[var(--foreground)]" />;
       case "DEPENDENCY_CREATED":
       case "DEPENDENCY_DELETED":
         return <GitBranch className="h-3.5 w-3.5 text-[#475569]" />;

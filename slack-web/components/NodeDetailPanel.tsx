@@ -36,10 +36,10 @@ const EDGE_STYLES: Record<
   }
 > = {
   violated: {
-    badgeBg: "#FEE2E2",
-    badgeBorder: "#B91C1C",
-    badgeText: "#991B1B",
-    borderStyle: "border-dashed border-[#B91C1C] border-2",
+    badgeBg: "var(--background)",
+    badgeBorder: "var(--foreground)",
+    badgeText: "var(--foreground)",
+    borderStyle: "border-dashed border-[var(--foreground)] border-2",
   },
   tight: {
     badgeBg: "#FEF3C7",
@@ -315,7 +315,7 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
                     </span>
                     <button
                       onClick={() => onDeleteDependency(edge.id)}
-                      className="text-[#991B1B] hover:text-[#7F1D1D] p-1"
+                      className="text-[var(--foreground)] hover:text-[#7F1D1D] p-1"
                       title="Remove edge"
                       aria-label="Remove edge"
                     >
@@ -354,7 +354,7 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
                     </span>
                     <button
                       onClick={() => onDeleteDependency(edge.id)}
-                      className="text-[#991B1B] hover:text-[#7F1D1D] p-1"
+                      className="text-[var(--foreground)] hover:text-[#7F1D1D] p-1"
                       title="Remove edge"
                       aria-label="Remove edge"
                     >
@@ -441,7 +441,7 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
           </button>
           <button
             onClick={() => onDelete(node.id)}
-            className="flex items-center justify-center gap-1.5 border border-[#FCA5A5] bg-[#FEE2E2] px-3 py-2 text-xs font-medium text-[#991B1B] hover:bg-[#FECACA] transition-colors"
+            className="flex items-center justify-center gap-1.5 border border-[var(--foreground)] bg-[var(--background)] px-3 py-2 text-xs font-medium text-[var(--foreground)] hover:bg-[#FECACA] transition-colors"
           >
             <Trash2 className="h-3.5 w-3.5" />
             <span>Delete</span>

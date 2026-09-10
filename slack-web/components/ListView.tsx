@@ -23,7 +23,7 @@ const TYPE_STYLES: Record<string, { bg: string; text: string; border: string; la
 const STATUS_BADGES: Record<string, { bg: string; text: string; border: string }> = {
   safe: { bg: "#EDF7F2", text: "#2D6A4F", border: "#BCDCCB" },
   tight: { bg: "#FEF3C7", text: "#92400E", border: "#FCD34D" },
-  violated: { bg: "#FEE2E2", text: "#991B1B", border: "#FCA5A5" },
+  violated: { bg: "var(--background)", text: "var(--foreground)", border: "var(--foreground)" },
 };
 
 function resolveStatusBadge(status: string, slackMinutes?: number) {
@@ -151,7 +151,7 @@ export const ListView: React.FC<ListViewProps> = ({
                   </button>
                   <button
                     onClick={() => onDeleteNode(node.id)}
-                    className="flex items-center gap-1 border border-[var(--border)] bg-[var(--background)] px-2.5 py-1 text-xs text-[#B91C1C] hover:border-[#B91C1C] hover:bg-[#FEE2E2] transition-colors"
+                    className="flex items-center gap-1 border border-[var(--border)] bg-[var(--background)] px-2.5 py-1 text-xs text-[var(--foreground)] hover:border-[var(--foreground)] hover:bg-[var(--background)] transition-colors"
                   >
                     <Trash2 className="h-3 w-3" />
                     Delete

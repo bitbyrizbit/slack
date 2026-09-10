@@ -7,11 +7,13 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[var(--background)] flex flex-col font-sans relative overflow-x-hidden">
       {/* Header */}
       <header className="px-8 py-6 w-full flex items-center justify-between border-b border-[var(--border)] relative z-20 bg-[var(--background)]">
-        <div className="flex items-center gap-6">
-          <SlackLogo />
-          <span className="text-[var(--accent)] text-xs uppercase tracking-widest font-semibold border-l border-[var(--border)] pl-6">
-            Seamless Travel Orchestrated
-          </span>
+        <div className="flex items-center gap-5">
+          <SlackLogo className="scale-110 origin-left" />
+          <div className="flex flex-col text-[var(--accent)] text-[9px] uppercase tracking-[0.25em] font-bold border-l border-[var(--border-strong)] pl-4 leading-[1.4]">
+            <span>Seamless</span>
+            <span>Travel</span>
+            <span>Orchestrated</span>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <Link

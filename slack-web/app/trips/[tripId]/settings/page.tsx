@@ -310,7 +310,7 @@ export default function TripSettingsPage() {
                     {member.role !== "owner" && (
                       <button
                         onClick={() => handleRemoveMember(member.id, member.name)}
-                        className="p-1 text-[#8E887D] hover:text-[#991B1B] transition-colors"
+                        className="p-1 text-[#8E887D] hover:text-[var(--foreground)] transition-colors"
                         title="Remove collaborator"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -413,8 +413,8 @@ export default function TripSettingsPage() {
         </section>
 
         {/* Section 4: Danger Zone */}
-        <section className="border border-[#FCA5A5] bg-[#FFF5F5] p-6 shadow-xs">
-          <div className="flex items-center gap-2 text-[#991B1B] mb-2">
+        <section className="border border-[var(--foreground)] bg-[#FFF5F5] p-6 shadow-xs">
+          <div className="flex items-center gap-2 text-[var(--foreground)] mb-2">
             <AlertTriangle className="h-5 w-5" />
             <h2 className="font-serif-heading text-lg font-bold">Danger Zone</h2>
           </div>
@@ -426,7 +426,7 @@ export default function TripSettingsPage() {
           <button
             onClick={handleDeleteTrip}
             disabled={isDeleting}
-            className="flex items-center gap-1.5 border border-[#B91C1C] bg-[#B91C1C] px-4 py-2 text-xs font-semibold text-[var(--card)] hover:bg-[#991B1B] disabled:opacity-50 transition-colors"
+            className="flex items-center gap-1.5 border border-[var(--foreground)] bg-[var(--foreground)] px-4 py-2 text-xs font-semibold text-[var(--card)] hover:bg-[var(--foreground)] disabled:opacity-50 transition-colors"
           >
             <Trash2 className="h-3.5 w-3.5" />
             <span>{isDeleting ? "Deleting Trip..." : "Delete This Trip"}</span>

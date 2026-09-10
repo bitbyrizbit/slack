@@ -218,7 +218,7 @@ export default function TripWorkspacePage() {
         )}
 
         {error && (
-          <div className="mx-6 my-2 border border-[#FCA5A5] bg-[#FEE2E2] px-4 py-2 text-xs text-[#991B1B] flex items-center justify-between">
+          <div className="mx-6 my-2 border border-[var(--foreground)] bg-[var(--background)] px-4 py-2 text-xs text-[var(--foreground)] flex items-center justify-between">
             <span>{error}</span>
             <button onClick={() => setError(null)} className="font-bold underline ml-4">
               Dismiss

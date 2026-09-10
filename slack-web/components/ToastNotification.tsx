@@ -43,7 +43,7 @@ const ToastItem: React.FC<{
         {toast.type === "success" ? (
           <CheckCircle2 className="h-4 w-4 text-[#2D6A4F] shrink-0" />
         ) : toast.type === "warning" || toast.type === "error" ? (
-          <AlertTriangle className="h-4 w-4 text-[#B91C1C] shrink-0" />
+          <AlertTriangle className="h-4 w-4 text-[var(--foreground)] shrink-0" />
         ) : (
           <Info className="h-4 w-4 text-[#2B5B84] shrink-0" />
         )}

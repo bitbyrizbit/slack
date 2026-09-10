@@ -93,7 +93,7 @@ export const DependencyModal: React.FC<DependencyModalProps> = ({
         </div>
 
         {error && (
-          <div className="mt-3 border border-[#FCA5A5] bg-[#FEE2E2] p-2 text-xs text-[#991B1B]">
+          <div className="mt-3 border border-[var(--foreground)] bg-[var(--background)] p-2 text-xs text-[var(--foreground)]">
             {error}
           </div>
         )}
@@ -137,7 +137,7 @@ export const DependencyModal: React.FC<DependencyModalProps> = ({
             <div className="bg-[var(--background)] p-2.5 border border-[var(--border)] text-[11px] text-[var(--muted-foreground)]">
               <span className="font-medium text-[var(--foreground)]">Temporal Gap:</span> {previewGap} minutes between arrival and departure.
               {previewGap < minBuffer && (
-                <span className="block mt-1 font-semibold text-[#B91C1C]">
+                <span className="block mt-1 font-semibold text-[var(--foreground)]">
                   Warning: Real gap ({previewGap}m) is less than minimum buffer ({minBuffer}m). This edge will be Violated.
                 </span>
               )}

@@ -175,7 +175,7 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
         {activeDisruptionsCount > 0 && onOpenImpactPanel && (
           <button
             onClick={onOpenImpactPanel}
-            className="flex items-center gap-1.5 border border-[#991B1B] bg-[#FFF5F5] px-2 py-1 text-xs font-semibold text-[#991B1B] hover:bg-[#FEE2E2] transition-colors shrink-0"
+            className="flex items-center gap-1.5 border border-[var(--foreground)] bg-[#FFF5F5] px-2 py-1 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--background)] transition-colors shrink-0"
             title="View active disruptions and impacted bookings"
           >
             <ShieldAlert className="h-3.5 w-3.5" />
@@ -229,14 +229,14 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
         <button
           onClick={onOpenTriggerDisruption}
           disabled={totalBookings === 0 || isViewer}
-          className="flex items-center gap-1.5 border border-[#B91C1C] bg-[#FFF5F5] px-3 py-1.5 text-xs font-semibold text-[#991B1B] hover:bg-[#FEE2E2] hover:border-[#991B1B] disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
+          className="flex items-center gap-1.5 border border-[var(--foreground)] bg-[#FFF5F5] px-3 py-1.5 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--background)] hover:border-[var(--foreground)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
           title={
             isViewer
               ? "Viewer role: read-only (server enforced)"
               : "Simulate a flight delay or cancellation to compute ripple impact"
           }
         >
-          <AlertTriangle className="h-3.5 w-3.5 text-[#B91C1C]" />
+          <AlertTriangle className="h-3.5 w-3.5 text-[var(--foreground)]" />
           <span className="hidden sm:inline">Disruption</span>
         </button>
 
@@ -391,7 +391,7 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
                 onClick={onLogout}
                 id="sign-out-btn"
                 title="Sign out"
-                className="flex items-center gap-1 border border-[var(--border-strong)] bg-[var(--card)] p-1.5 text-[var(--muted-foreground)] hover:bg-[#FEE2E2] hover:text-[#991B1B] hover:border-[#FCA5A5] transition-colors"
+                className="flex items-center gap-1 border border-[var(--border-strong)] bg-[var(--card)] p-1.5 text-[var(--muted-foreground)] hover:bg-[var(--background)] hover:text-[var(--foreground)] hover:border-[var(--foreground)] transition-colors"
               >
                 <LogOut className="h-3.5 w-3.5" />
               </button>

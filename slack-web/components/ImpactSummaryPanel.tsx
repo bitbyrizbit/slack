@@ -55,7 +55,7 @@ const ScoreRing: React.FC<{ score: number; isRecommended: boolean }> = ({
       ? "#059669" // emerald
       : score >= 50
       ? "var(--accent)" // amber
-      : "#DC2626"; // crimson
+      : "var(--foreground)"; // crimson
 
   return (
     <div className="relative flex items-center justify-center h-12 w-12 flex-shrink-0">
@@ -195,7 +195,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
                 <ArrowLeft className="h-3.5 w-3.5" />
               </button>
             ) : (
-              <span className="flex h-6 w-6 items-center justify-center bg-[#B91C1C] text-[var(--background)]">
+              <span className="flex h-6 w-6 items-center justify-center bg-[var(--foreground)] text-[var(--background)]">
                 <AlertTriangle className="h-3.5 w-3.5" />
               </span>
             )}
@@ -219,11 +219,11 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
         {activeTab === "blast_radius" && (
           <div className="animate-in fade-in duration-200">
             {/* Primary Disruption Banner */}
-            <div className="mt-4 border-2 border-[#B91C1C] bg-[#FEE2E2] p-3 text-xs">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-[#991B1B]">
+            <div className="mt-4 border-2 border-[var(--foreground)] bg-[var(--background)] p-3 text-xs">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--foreground)]">
                 Triggered Disruption Event
               </div>
-              <div className="font-serif-heading text-base font-bold text-[#991B1B] mt-0.5">
+              <div className="font-serif-heading text-base font-bold text-[var(--foreground)] mt-0.5">
                 {summaryLine}
               </div>
               {disruption.description && (
@@ -236,7 +236,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
               <span>Evaluated downstream connections:</span>
               <div className="flex items-center gap-2 font-medium">
                 {missedList.length > 0 && (
-                  <span className="text-[#991B1B] font-bold">{missedList.length} missed</span>
+                  <span className="text-[var(--foreground)] font-bold">{missedList.length} missed</span>
                 )}
                 {atRiskList.length > 0 && (
                   <span className="text-[#92400E] font-bold">{atRiskList.length} at risk</span>
@@ -249,8 +249,8 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
 
             {/* MISSED Section */}
             <div className="mt-5">
-              <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#991B1B] mb-2">
-                <span className="inline-block h-2 w-2 rounded-full bg-[#B91C1C]" />
+              <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--foreground)] mb-2">
+                <span className="inline-block h-2 w-2 rounded-full bg-[var(--foreground)]" />
                 <span>Missed Bookings ({missedList.length})</span>
               </div>
 
@@ -263,13 +263,13 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
                   {missedList.map((item) => (
                     <div
                       key={item.booking_id}
-                      className="border-2 border-dashed border-[#B91C1C] bg-[#FFF5F5] p-3 text-xs"
+                      className="border-2 border-dashed border-[var(--foreground)] bg-[#FFF5F5] p-3 text-xs"
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-serif-heading text-sm font-bold text-[var(--foreground)]">
                           {item.booking_title}
                         </span>
-                        <span className="rounded-full border border-[#B91C1C] bg-[#FEE2E2] px-2 py-0.5 text-[10px] font-bold text-[#991B1B] uppercase">
+                        <span className="rounded-full border border-[var(--foreground)] bg-[var(--background)] px-2 py-0.5 text-[10px] font-bold text-[var(--foreground)] uppercase">
                           Missed ({item.new_slack_minutes}m)
                         </span>
                       </div>
@@ -370,7 +370,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
 
             {/* Error state */}
             {optionsError && (
-              <div className="border border-[#B91C1C] bg-[#FEE2E2] p-3 text-xs text-[#991B1B]">
+              <div className="border border-[var(--foreground)] bg-[var(--background)] p-3 text-xs text-[var(--foreground)]">
                 {optionsError}
               </div>
             )}
@@ -387,7 +387,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
                       ? { bg: "#EBF3F9", text: "#1E3E5B", border: "#2B5B84" }
                       : cand.candidate_type === "shift"
                       ? { bg: "#FBF1E8", text: "#633B22", border: "#885434" }
-                      : { bg: "#FFF5F5", text: "#991B1B", border: "#B91C1C" };
+                      : { bg: "#FFF5F5", text: "var(--foreground)", border: "var(--foreground)" };
 
                   return (
                     <div

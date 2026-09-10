@@ -89,38 +89,6 @@ def seed_standard_demo_trip(
             transfer = next((b for b in bookings if b.type == "transfer"), None)
             activities = [b for b in bookings if b.type == "activity"]
         
-    # Add 25 sample events to demo trips for all edge cases
-    base_demo_time = datetime(2026, 12, 1, 8, 0, 0, tzinfo=timezone.utc)
-    prev_demo_booking_id = None
-    for i in range(25):
-        types = ['flight', 'hotel', 'activity', 'transfer']
-        b_type = types[i % 4]
-        
-        start = base_demo_time + timedelta(hours=i*4)
-        end = start + timedelta(hours=2)
-        
-        # Edge case: overlapping times
-        if i == 5:
-            start = base_demo_time + timedelta(hours=4*4) + timedelta(minutes=30)
-            
-        demo_booking = db_create_booking(
-            trip_id=trip_id,
-            type=b_type,
-            title=f'Sample Event {i+1}',
-            start_time=start.isoformat(),
-            end_time=end.isoformat(),
-            location='Demo Location',
-            vendor='Demo Vendor',
-            cost=100.0 + i,
-            metadata_json={}
-        )
-        
-        if prev_demo_booking_id and i % 2 == 0:
-            db_create_dependency(trip_id, prev_demo_booking_id, demo_booking.id, min_buffer_minutes=30)
-        elif prev_demo_booking_id and i % 3 == 0:
-            db_create_dependency(trip_id, prev_demo_booking_id, demo_booking.id, min_buffer_minutes=120)
-            
-        prev_demo_booking_id = demo_booking.id
 
     return {
                 "trip": existing,
@@ -331,7 +299,45 @@ def seed_standard_demo_trip(
     db_add_trip_member(trip_id, "editor@demo.com", "Charlie (Editor)", role="editor", user_id=editor_user.id if editor_user else None)
     db_add_trip_member(trip_id, "viewer@demo.com", "Bob (Viewer)", role="viewer", user_id=viewer_user.id if viewer_user else None)
 
+
+    # --- ADD 25 SAMPLE EVENTS FOR ALL EDGE CASES ---
+    extra_bookings = []
+    extra_dependencies = []
+    base_demo_time = base_date + timedelta(days=2)
+    prev_demo_booking_id = None
+    for i in range(25):
+        types = ['flight', 'hotel', 'activity', 'transfer']
+        b_type = types[i % 4]
+        
+        start = base_demo_time + timedelta(hours=i*4)
+        end = start + timedelta(hours=2)
+        
+        if i == 5:
+            start = base_demo_time + timedelta(hours=4*4) + timedelta(minutes=30)
+            
+        demo_booking = db_create_booking(
+            BookingCreate(
+                trip_id=trip_id,
+                type=b_type,
+                title=f'Sample Event {i+1}',
+                start_time=start,
+                end_time=end,
+                location='Demo Location',
+                vendor='Demo Vendor',
+                cost=100.0 + i,
+            )
+        )
+        extra_bookings.append(demo_booking)
+        
+        if prev_demo_booking_id and i % 2 == 0:
+            extra_dependencies.append(db_create_dependency(DependencyCreate(trip_id=trip_id, from_booking_id=prev_demo_booking_id, to_booking_id=demo_booking.id, min_buffer_minutes=30)))
+        elif prev_demo_booking_id and i % 3 == 0:
+            extra_dependencies.append(db_create_dependency(DependencyCreate(trip_id=trip_id, from_booking_id=prev_demo_booking_id, to_booking_id=demo_booking.id, min_buffer_minutes=120)))
+            
+        prev_demo_booking_id = demo_booking.id
+
     db_add_activity_log(
+
         trip_id,
         "System Demo Engine",
         "system@slacktravel.demo",
@@ -352,8 +358,8 @@ def seed_standard_demo_trip(
 
     return {
         "trip": trip,
-        "bookings": [b1, b2, b3, b4, b5, b6, b7],
-        "dependencies": [d1, d2, d3, d4, d5],
+        "bookings": [b1, b2, b3, b4, b5, b6, b7] + extra_bookings,
+        "dependencies": [d1, d2, d3, d4, d5] + extra_dependencies,
         "sample_disruption": sample_disruption_payload,
         "tight_booking_id": str(b2.id),
         "overlapping_pair": [str(b4.id), str(b5.id)],

@@ -32,10 +32,10 @@ interface D3Link {
 const NODE_RADIUS = 30;
 
 const TYPE_COLORS: Record<string, { fill: string; stroke: string; label: string; text: string }> = {
-  flight: { fill: "#EBF3F9", stroke: "#2B5B84", label: "Flight", text: "#1E3E5B" },
-  hotel: { fill: "#FBF1E8", stroke: "#885434", label: "Hotel", text: "#633B22" },
-  transfer: { fill: "#EDF7F2", stroke: "#2D6A4F", label: "Transfer", text: "#1E4734" },
-  activity: { fill: "#F7EEF6", stroke: "#6D3A6D", label: "Activity", text: "#4D284D" },
+  flight: { fill: "#18181A", stroke: "#18181A", label: "Flight", text: "#E6D5B8" },
+  hotel: { fill: "#2D3A31", stroke: "#2D3A31", label: "Hotel", text: "#E6D5B8" },
+  transfer: { fill: "#E6D5B8", stroke: "#E6D5B8", label: "Transfer", text: "#18181A" },
+  activity: { fill: "#FFFFFF", stroke: "#FFFFFF", label: "Activity", text: "#18181A" },
 };
 
 export function getEdgeStyle(status: "safe" | "tight" | "violated") {
@@ -751,7 +751,7 @@ export function useD3Graph({
       .append("g")
       .attr("class", "node-type-icon")
       .attr("transform", "translate(-9, -9)")
-      .attr("stroke", (d) => TYPE_COLORS[d.type]?.stroke || "var(--foreground)")
+      .attr("stroke", (d) => TYPE_COLORS[d.type]?.text || "var(--foreground)")
       .attr("stroke-width", 2)
       .attr("stroke-linecap", "round")
       .attr("stroke-linejoin", "round")
@@ -787,7 +787,7 @@ export function useD3Graph({
       .attr("font-size", "11px")
       .attr("font-family", "var(--font-heading), Georgia, serif")
       .attr("font-weight", "600")
-      .attr("fill", "var(--foreground)")
+      .attr("fill", "var(--background)")
       .text((d) => {
         return d.title.length > 20 ? d.title.substring(0, 18) + "..." : d.title;
       });
@@ -800,7 +800,7 @@ export function useD3Graph({
       .attr("font-size", "10px")
       .attr("font-family", "var(--font-body), system-ui, sans-serif")
       .attr("font-weight", "500")
-      .attr("fill", "#78716C")
+      .attr("fill", "var(--background)")
       .text((d) => {
         const start = d.start_time.includes("T") ? d.start_time.split("T")[1].substring(0, 5) : "";
         const end = d.end_time.includes("T") ? d.end_time.split("T")[1].substring(0, 5) : "";

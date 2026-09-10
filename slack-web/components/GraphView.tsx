@@ -376,10 +376,10 @@ export const GraphView: React.FC<GraphViewProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 <span
-                  className="inline-block h-1.5 w-5 border-b-2 border-dashed border-[#B91C1C]"
+                  className="inline-block h-1.5 w-5 border-b-2 border-dashed border-[var(--foreground)]"
                   style={{ height: "0px" }}
                 />
-                <span className="text-[#991B1B] font-bold">Violated (&lt;0m, missed)</span>
+                <span className="text-[var(--foreground)] font-bold">Violated (&lt;0m, missed)</span>
               </div>
             </div>
           </div>

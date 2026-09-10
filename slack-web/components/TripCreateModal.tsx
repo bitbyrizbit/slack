@@ -58,7 +58,7 @@ export const TripCreateModal: React.FC<TripCreateModalProps> = ({
         </div>
 
         {error && (
-          <div className="mt-3 border border-[#FCA5A5] bg-[#FEE2E2] p-2 text-xs text-[#991B1B]">
+          <div className="mt-3 border border-[var(--foreground)] bg-[var(--background)] p-2 text-xs text-[var(--foreground)]">
             {error}
           </div>
         )}

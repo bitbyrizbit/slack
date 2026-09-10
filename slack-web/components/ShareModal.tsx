@@ -122,7 +122,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         </div>
 
         {error && (
-          <div className="mt-4 border border-[#FCA5A5] bg-[#FEE2E2] p-3 text-xs text-[#991B1B]">
+          <div className="mt-4 border border-[var(--foreground)] bg-[var(--background)] p-3 text-xs text-[var(--foreground)]">
             {error}
           </div>
         )}
@@ -294,7 +294,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 {m.role !== "owner" && (
                   <button
                     onClick={() => handleRemove(m.id)}
-                    className="p-1 text-[#8E887D] hover:text-[#DC2626] transition-colors"
+                    className="p-1 text-[#8E887D] hover:text-[var(--foreground)] transition-colors"
                     title="Remove collaborator"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
