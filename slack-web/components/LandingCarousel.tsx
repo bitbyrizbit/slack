@@ -1,15 +1,45 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plane, MapPin, AlertTriangle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const TRIPS = [
-  { title: "Paris Getaway", status: "Active", flights: 2, hotels: 1, delay: null },
-  { title: "Alpine Odyssey", status: "Draft", flights: 3, hotels: 2, delay: "+15m Tight" },
-  { title: "Tokyo Summit", status: "Active", flights: 1, hotels: 1, delay: null },
-  { title: "Bali Retreat", status: "Past", flights: 2, hotels: 1, delay: null },
-  { title: "NYC Weekend", status: "Draft", flights: 2, hotels: 1, delay: "+45m Delay" },
+  { 
+    title: "Paris Getaway", 
+    status: "Active", 
+    flight: { text: "Flight AF 123 (JFK → CDG)", time: "10:00 - 22:30" },
+    hotel: { text: "Le Meurice, Rue de Rivoli", time: "Check-in 14:00" },
+    delay: null 
+  },
+  {
+    title: "Alpine Odyssey",
+    status: "Draft",
+    flight: { text: "Swiss Air LX 354 (ZRH → GVA)", time: "13:30 - 15:00" },
+    hotel: { text: "Mont-Blanc Luxury Resort", time: "Check-in 17:30" },
+    delay: "+15m Tight Gap Detected"
+  },
+  {
+    title: "Tokyo Summit",
+    status: "Active",
+    flight: { text: "JAL 005 (JFK → HND)", time: "12:00 - 15:30 (+1)" },
+    hotel: { text: "Aman Tokyo, Otemachi", time: "Check-in 16:00" },
+    delay: null
+  },
+  {
+    title: "Bali Retreat",
+    status: "Past",
+    flight: { text: "SQ 938 (SIN → DPS)", time: "09:15 - 11:55" },
+    hotel: { text: "Four Seasons Resort Sayan", time: "Check-in 14:00" },
+    delay: null
+  },
+  {
+    title: "NYC Weekend",
+    status: "Draft",
+    flight: { text: "AA 100 (LHR → JFK)", time: "08:30 - 11:15" },
+    hotel: { text: "The Plaza, 5th Avenue", time: "Check-in 15:00" },
+    delay: "+45m Delay Warning"
+  }
 ];
 
 export default function LandingCarousel() {
@@ -18,7 +48,7 @@ export default function LandingCarousel() {
   useEffect(() => {
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % TRIPS.length);
-    }, 3000);
+    }, 4000);
     return () => clearInterval(timer);
   }, []);
 
@@ -29,7 +59,7 @@ export default function LandingCarousel() {
 
   return (
     <div className="relative w-full max-w-sm mx-auto flex flex-col items-center">
-      <div className="w-full relative h-[320px]">
+      <div className="w-full relative h-[380px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={index}
@@ -46,32 +76,42 @@ export default function LandingCarousel() {
               </div>
             </div>
 
-            <div className="space-y-4 flex-1">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#2D3A31] flex items-center justify-center">
-                  <span className="text-[10px] text-[var(--accent)]">✈</span>
+            <div className="space-y-6 flex-1">
+              {/* Flight Section */}
+              <div className="flex gap-4">
+                <div className="flex flex-col items-center">
+                  <div className="w-8 h-8 rounded-full bg-[#E6D5B8] flex items-center justify-center text-[#18181A]">
+                    <Plane size={14} />
+                  </div>
+                  <div className="w-px h-10 bg-[#3A3A3C] my-2"></div>
                 </div>
                 <div>
-                  <div className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider">Flights</div>
-                  <div className="text-sm font-semibold text-[var(--foreground)]">{trip.flights} Bookings</div>
+                  <div className="text-xs text-[var(--accent)] font-semibold tracking-wide uppercase mb-1">Departure</div>
+                  <div className="text-sm text-[var(--foreground)] font-medium leading-tight">{trip.flight.text}</div>
+                  <div className="text-xs text-[var(--muted-foreground)] mt-1">{trip.flight.time}</div>
                 </div>
               </div>
               
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#2D3A31] flex items-center justify-center">
-                  <span className="text-[10px] text-[var(--accent)]">🏨</span>
+              {/* Hotel Section */}
+              <div className="flex gap-4">
+                <div className="flex flex-col items-center">
+                  <div className="w-8 h-8 rounded-full border border-[#3A3A3C] bg-[#2D3A31] flex items-center justify-center text-[var(--accent)]">
+                    <MapPin size={14} />
+                  </div>
                 </div>
                 <div>
-                  <div className="text-xs text-[var(--muted-foreground)] uppercase tracking-wider">Hotels</div>
-                  <div className="text-sm font-semibold text-[var(--foreground)]">{trip.hotels} Bookings</div>
+                  <div className="text-xs text-[var(--accent)] font-semibold tracking-wide uppercase mb-1">Check-in</div>
+                  <div className="text-sm text-[var(--foreground)] font-medium leading-tight">{trip.hotel.text}</div>
+                  <div className="text-xs text-[var(--muted-foreground)] mt-1">{trip.hotel.time}</div>
                 </div>
               </div>
             </div>
 
+            {/* Delay Section */}
             {trip.delay && (
-              <div className="mt-6 border-t border-[#3A3A3C] pt-4 flex items-center justify-between">
-                <span className="text-xs text-[#8E887D]">Graph Warning</span>
-                <span className="text-xs text-[var(--accent)] font-bold">{trip.delay}</span>
+              <div className="mt-6 border-t border-[#3A3A3C] pt-4 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-[var(--accent)]" />
+                <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">{trip.delay}</span>
               </div>
             )}
           </motion.div>
@@ -79,7 +119,7 @@ export default function LandingCarousel() {
       </div>
 
       <div className="flex items-center gap-4 mt-6">
-        <button onClick={prev} className="p-2 rounded-full border border-[#3A3A3C] text-[var(--foreground)] hover:bg-[#3A3A3C] transition-colors">
+        <button onClick={prev} className="p-2 rounded-full border border-[#3A3A3C] text-[var(--foreground)] hover:bg-[#3A3A3C] transition-colors cursor-pointer">
           <ArrowLeft className="w-4 h-4" />
         </button>
         <div className="flex gap-1.5">
@@ -87,7 +127,7 @@ export default function LandingCarousel() {
             <div key={i} className={`h-1.5 rounded-full transition-all ${i === index ? "w-6 bg-[var(--accent)]" : "w-1.5 bg-[#3A3A3C]"}`} />
           ))}
         </div>
-        <button onClick={next} className="p-2 rounded-full border border-[#3A3A3C] text-[var(--foreground)] hover:bg-[#3A3A3C] transition-colors">
+        <button onClick={next} className="p-2 rounded-full border border-[#3A3A3C] text-[var(--foreground)] hover:bg-[#3A3A3C] transition-colors cursor-pointer">
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>

@@ -316,8 +316,8 @@ def seed_standard_demo_trip(
             start = base_demo_time + timedelta(hours=4*4) + timedelta(minutes=30)
             
         demo_booking = db_create_booking(
+            trip_id,
             BookingCreate(
-                trip_id=trip_id,
                 type=b_type,
                 title=f'Sample Event {i+1}',
                 start_time=start,
@@ -330,9 +330,9 @@ def seed_standard_demo_trip(
         extra_bookings.append(demo_booking)
         
         if prev_demo_booking_id and i % 2 == 0:
-            extra_dependencies.append(db_create_dependency(DependencyCreate(trip_id=trip_id, from_booking_id=prev_demo_booking_id, to_booking_id=demo_booking.id, min_buffer_minutes=30)))
+            extra_dependencies.append(db_create_dependency(trip_id, DependencyCreate(from_booking_id=prev_demo_booking_id, to_booking_id=demo_booking.id, min_buffer_minutes=30)))
         elif prev_demo_booking_id and i % 3 == 0:
-            extra_dependencies.append(db_create_dependency(DependencyCreate(trip_id=trip_id, from_booking_id=prev_demo_booking_id, to_booking_id=demo_booking.id, min_buffer_minutes=120)))
+            extra_dependencies.append(db_create_dependency(trip_id, DependencyCreate(from_booking_id=prev_demo_booking_id, to_booking_id=demo_booking.id, min_buffer_minutes=120)))
             
         prev_demo_booking_id = demo_booking.id
 
