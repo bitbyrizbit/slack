@@ -9,7 +9,9 @@ export default function LandingPage() {
       {/* Header */}
       <header className="px-8 py-6 w-full flex items-center justify-between border-b border-[var(--border)] relative z-20 bg-white">
         <div className="flex items-center gap-5">
-          <SlackLogo className="scale-110 origin-left" italicText={true} />
+          <div className="transform -rotate-3">
+            <SlackLogo italicText={true} />
+          </div>
           <div className="flex flex-col text-[var(--muted-foreground)] text-[10px] uppercase tracking-[0.15em] font-medium font-[family-name:var(--font-body)] border-l border-[var(--border-strong)] pl-4 leading-[1.3]">
             <span>Seamless</span>
             <span>Travel</span>
@@ -121,7 +123,9 @@ export default function LandingPage() {
       <footer className="border-t border-[var(--border)] bg-white px-8 py-16">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-4">
-            <SlackLogo italicText={true} />
+            <div className="transform -rotate-3">
+              <SlackLogo italicText={true} />
+            </div>
           </div>
           <div className="text-sm text-[var(--muted-foreground)] font-medium">
             &copy; {new Date().getFullYear()} Slack. Crafted for seamless journeys.
