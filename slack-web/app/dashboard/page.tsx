@@ -328,7 +328,7 @@ export default function DashboardPage() {
                           </span>
                         </div>
                         <div className="text-[11px] text-[#92400E] mt-1">
-                          {thinConns[0].from_booking_title} -> {thinConns[0].to_booking_title} (
+                          {thinConns[0].from_booking_title} -&gt; {thinConns[0].to_booking_title} (
                           {Math.round(thinConns[0].actual_gap_minutes)}m gap,{" "}
                           {Math.round(thinConns[0].slack_minutes)}m slack)
                         </div>
