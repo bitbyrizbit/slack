@@ -84,7 +84,7 @@ export default function ProfilePage() {
 
         <form onSubmit={handleSave} className="border border-[var(--border-strong)] bg-[var(--card)] p-6 space-y-6 shadow-sm">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#8E887D] mb-1.5 flex items-center gap-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-1.5 flex items-center gap-1.5">
               <Mail className="h-3.5 w-3.5" />
               <span>Email Address</span>
             </label>
@@ -94,13 +94,13 @@ export default function ProfilePage() {
               value={currentUser?.email || ""}
               className="w-full border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-xs text-[var(--muted-foreground)] cursor-not-allowed"
             />
-            <p className="mt-1 text-[11px] text-[#8E887D]">
+            <p className="mt-1 text-[11px] text-[var(--muted-foreground)]">
               Email is your permanent login identifier and cannot be changed.
             </p>
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#8E887D] mb-1.5 flex items-center gap-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-1.5 flex items-center gap-1.5">
               <User className="h-3.5 w-3.5" />
               <span>Display Name</span>
             </label>
@@ -111,7 +111,7 @@ export default function ProfilePage() {
               placeholder="e.g. Aisha Taylor"
               className="w-full border border-[var(--border-strong)] bg-[var(--background)] px-3 py-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
             />
-            <p className="mt-1 text-[11px] text-[#8E887D]">
+            <p className="mt-1 text-[11px] text-[var(--muted-foreground)]">
               This name is shown to collaborators in the Activity Feed, Presence avatars, and trip member lists.
             </p>
           </div>

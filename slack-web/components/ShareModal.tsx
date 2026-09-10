@@ -259,7 +259,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
               Current Collaborators ({members.length})
             </h3>
-            {isLoading && <span className="text-[11px] text-[#8E887D]">Refreshing...</span>}
+            {isLoading && <span className="text-[11px] text-[var(--muted-foreground)]">Refreshing...</span>}
           </div>
 
           <div className="space-y-2">
@@ -294,7 +294,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 {m.role !== "owner" && (
                   <button
                     onClick={() => handleRemove(m.id)}
-                    className="p-1 text-[#8E887D] hover:text-[var(--foreground)] transition-colors"
+                    className="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
                     title="Remove collaborator"
                   >
                     <Trash2 className="h-3.5 w-3.5" />

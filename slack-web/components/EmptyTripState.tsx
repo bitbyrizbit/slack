@@ -26,7 +26,7 @@ export const EmptyTripState: React.FC<EmptyTripStateProps> = ({
         <h2 className="font-serif-heading text-2xl font-bold text-[var(--foreground)]">
           {tripName}
         </h2>
-        <p className="mt-1 text-xs text-[#8E887D]">Empty Itinerary Graph</p>
+        <p className="mt-1 text-xs text-[var(--muted-foreground)]">Empty Itinerary Graph</p>
 
         {/* Notebook horizontal ruled lines placeholder */}
         <div className="my-6 space-y-3 px-4">

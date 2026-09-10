@@ -77,7 +77,7 @@ export const TripCreateModal: React.FC<TripCreateModalProps> = ({
               required
               autoFocus
             />
-            <p className="mt-1 text-[11px] text-[#8E887D]">
+            <p className="mt-1 text-[11px] text-[var(--muted-foreground)]">
               A trip graph will be created to track dependencies and slack between your bookings.
             </p>
           </div>

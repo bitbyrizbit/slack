@@ -32,10 +32,10 @@ interface D3Link {
 const NODE_RADIUS = 30;
 
 const TYPE_COLORS: Record<string, { fill: string; stroke: string; label: string; text: string }> = {
-  flight: { fill: "#18181A", stroke: "#18181A", label: "Flight", text: "#E6D5B8" },
-  hotel: { fill: "#2D3A31", stroke: "#2D3A31", label: "Hotel", text: "#E6D5B8" },
-  transfer: { fill: "#E6D5B8", stroke: "#E6D5B8", label: "Transfer", text: "#18181A" },
-  activity: { fill: "#FFFFFF", stroke: "#FFFFFF", label: "Activity", text: "#18181A" },
+  flight: { fill: "#2D3A31", stroke: "#2D3A31", label: "Flight", text: "#FFFFFF" },       // dark green
+  hotel: { fill: "#C2A878", stroke: "#C2A878", label: "Hotel", text: "#1A1A1A" },          // warm sand
+  transfer: { fill: "#E8F0E9", stroke: "#A8C0A9", label: "Transfer", text: "#1A1A1A" },   // light green
+  activity: { fill: "#F5F2ED", stroke: "#B8B2A8", label: "Activity", text: "#1A1A1A" },   // cream
 };
 
 export function getEdgeStyle(status: "safe" | "tight" | "violated") {
@@ -329,7 +329,7 @@ export function useD3Graph({
         .attr("font-size", "10px")
         .attr("font-family", "var(--font-body), system-ui, sans-serif")
         .attr("font-weight", "500")
-        .attr("fill", "#8E887D")
+        .attr("fill", "var(--muted-foreground)")
         .text(bucket.fullDate);
     });
 

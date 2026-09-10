@@ -56,7 +56,7 @@ export const DemoControlBar: React.FC<DemoControlBarProps> = ({
               className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
                 !currentTrip || !isAlpineDemo
                   ? "bg-[var(--muted)] text-[var(--foreground)] ring-1 ring-[var(--foreground)]"
-                  : "text-[#8E887D] line-through"
+                  : "text-[var(--muted-foreground)] line-through"
               }`}
             >
               1. Load Demo
@@ -67,8 +67,8 @@ export const DemoControlBar: React.FC<DemoControlBarProps> = ({
                 isAlpineDemo && activeDisruptionsCount === 0
                   ? "bg-[var(--background)] text-[var(--foreground)] ring-1 ring-[var(--foreground)]"
                   : activeDisruptionsCount > 0
-                  ? "text-[#8E887D] line-through"
-                  : "text-[#8E887D]"
+                  ? "text-[var(--muted-foreground)] line-through"
+                  : "text-[var(--muted-foreground)]"
               }`}
             >
               2. Trigger LX 354
@@ -78,7 +78,7 @@ export const DemoControlBar: React.FC<DemoControlBarProps> = ({
               className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
                 activeDisruptionsCount > 0
                   ? "bg-[#ECFDF5] text-[#065F46] ring-1 ring-[#059669] animate-pulse"
-                  : "text-[#8E887D]"
+                  : "text-[var(--muted-foreground)]"
               }`}
             >
               3. Apply Recovery
@@ -131,7 +131,7 @@ export const DemoControlBar: React.FC<DemoControlBarProps> = ({
         <div className="border-t border-[var(--muted)] bg-[var(--background)] px-6 py-2.5">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2 text-[var(--muted-foreground)]">
-              <Info className="h-3.5 w-3.5 text-[#8E887D]" />
+              <Info className="h-3.5 w-3.5 text-[var(--muted-foreground)]" />
               <span>
                 Stress-test graph layout or inject authentic Open-Meteo real-time airport telemetry:
               </span>

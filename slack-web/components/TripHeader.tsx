@@ -335,7 +335,7 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
               {/* Presence Avatars inside overflow */}
               {activeUsers.length > 0 && (
                 <div className="px-3 py-2 border-t border-[var(--border)]">
-                  <div className="text-[10px] uppercase font-bold text-[#8E887D] mb-1">
+                  <div className="text-[10px] uppercase font-bold text-[var(--muted-foreground)] mb-1">
                     Collaborators ({activeUsers.length})
                   </div>
                   <PresenceAvatars
@@ -365,7 +365,7 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
                       ON
                     </span>
                   ) : (
-                    <span className="text-[9px] text-[#8E887D] font-bold">OFF</span>
+                    <span className="text-[9px] text-[var(--muted-foreground)] font-bold">OFF</span>
                   )}
                 </button>
               )}
@@ -384,7 +384,7 @@ export const TripHeader: React.FC<TripHeaderProps> = ({
               >
                 {currentUser.display_name}
               </Link>
-              <div className="text-[10px] text-[#8E887D] leading-tight">
+              <div className="text-[10px] text-[var(--muted-foreground)] leading-tight">
                 {isViewer ? "Viewer" : "Active"}
               </div>
             </div>

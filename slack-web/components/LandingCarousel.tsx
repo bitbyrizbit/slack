@@ -67,9 +67,9 @@ export default function LandingCarousel() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
-            className="absolute inset-0 bg-[#18181A] border border-[#3A3A3C] rounded-2xl p-8 shadow-2xl flex flex-col"
+            className="absolute inset-0 bg-white border border-[var(--border)] rounded-2xl p-8 shadow-sm flex flex-col"
           >
-            <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#3A3A3C]">
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-[var(--border)]">
               <div className="font-serif-heading text-lg font-medium text-[var(--foreground)]">{trip.title}</div>
               <div className="text-[10px] text-[#2D3A31] bg-[var(--accent)] px-3 py-1 rounded-full font-bold uppercase tracking-widest">
                 {trip.status}
@@ -80,10 +80,10 @@ export default function LandingCarousel() {
               {/* Flight Section */}
               <div className="flex gap-4">
                 <div className="flex flex-col items-center">
-                  <div className="w-8 h-8 rounded-full bg-[#E6D5B8] flex items-center justify-center text-[#18181A]">
+                  <div className="w-8 h-8 rounded-full bg-[var(--foreground)] flex items-center justify-center text-[var(--foreground)]">
                     <Plane size={14} />
                   </div>
-                  <div className="w-px h-10 bg-[#3A3A3C] my-2"></div>
+                  <div className="w-px h-10 bg-[var(--border)] my-2"></div>
                 </div>
                 <div>
                   <div className="text-xs text-[var(--accent)] font-semibold tracking-wide uppercase mb-1">Departure</div>
@@ -95,7 +95,7 @@ export default function LandingCarousel() {
               {/* Hotel Section */}
               <div className="flex gap-4">
                 <div className="flex flex-col items-center">
-                  <div className="w-8 h-8 rounded-full border border-[#3A3A3C] bg-[#2D3A31] flex items-center justify-center text-[var(--accent)]">
+                  <div className="w-8 h-8 rounded-full border border-[var(--border)] bg-[#2D3A31] flex items-center justify-center text-[var(--accent)]">
                     <MapPin size={14} />
                   </div>
                 </div>
@@ -109,7 +109,7 @@ export default function LandingCarousel() {
 
             {/* Delay Section */}
             {trip.delay && (
-              <div className="mt-6 border-t border-[#3A3A3C] pt-4 flex items-center gap-2">
+              <div className="mt-6 border-t border-[var(--border)] pt-4 flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-[var(--accent)]" />
                 <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">{trip.delay}</span>
               </div>
@@ -119,15 +119,15 @@ export default function LandingCarousel() {
       </div>
 
       <div className="flex items-center gap-4 mt-6">
-        <button onClick={prev} className="p-2 rounded-full border border-[#3A3A3C] text-[var(--foreground)] hover:bg-[#3A3A3C] transition-colors cursor-pointer">
+        <button onClick={prev} className="p-2 rounded-full border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors cursor-pointer">
           <ArrowLeft className="w-4 h-4" />
         </button>
         <div className="flex gap-1.5">
           {TRIPS.map((_, i) => (
-            <div key={i} className={`h-1.5 rounded-full transition-all ${i === index ? "w-6 bg-[var(--accent)]" : "w-1.5 bg-[#3A3A3C]"}`} />
+            <div key={i} className={`h-1.5 rounded-full transition-all ${i === index ? "w-6 bg-[#2D3A31]" : "w-1.5 bg-[var(--border-strong)]"}`} />
           ))}
         </div>
-        <button onClick={next} className="p-2 rounded-full border border-[#3A3A3C] text-[var(--foreground)] hover:bg-[#3A3A3C] transition-colors cursor-pointer">
+        <button onClick={next} className="p-2 rounded-full border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors cursor-pointer">
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>

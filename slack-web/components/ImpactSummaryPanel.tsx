@@ -83,7 +83,7 @@ const ScoreRing: React.FC<{ score: number; isRecommended: boolean }> = ({
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-[12px] font-bold text-[var(--foreground)]">{score}</span>
-        <span className="text-[7px] uppercase font-bold text-[#8E887D] -mt-0.5">pts</span>
+        <span className="text-[7px] uppercase font-bold text-[var(--muted-foreground)] -mt-0.5">pts</span>
       </div>
     </div>
   );
@@ -255,7 +255,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
               </div>
 
               {missedList.length === 0 ? (
-                <p className="border border-[var(--border)] bg-[var(--background)] p-2.5 text-xs text-[#8E887D] italic">
+                <p className="border border-[var(--border)] bg-[var(--background)] p-2.5 text-xs text-[var(--muted-foreground)] italic">
                   No connections are classified as completely missed.
                 </p>
               ) : (
@@ -290,7 +290,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
               </div>
 
               {atRiskList.length === 0 ? (
-                <p className="border border-[var(--border)] bg-[var(--background)] p-2.5 text-xs text-[#8E887D] italic">
+                <p className="border border-[var(--border)] bg-[var(--background)] p-2.5 text-xs text-[var(--muted-foreground)] italic">
                   No connections are at critical risk.
                 </p>
               ) : (
@@ -319,7 +319,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
 
             {/* UNAFFECTED Section */}
             {unaffectedList.length > 0 && (
-              <div className="mt-5 border-t border-[var(--border)] pt-3 text-xs text-[#8E887D]">
+              <div className="mt-5 border-t border-[var(--border)] pt-3 text-xs text-[var(--muted-foreground)]">
                 <span className="font-medium text-[var(--foreground)]">{unaffectedList.length}</span> downstream
                 booking(s) outside the blast radius remain safely scheduled.
               </div>
@@ -396,7 +396,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
                       className={`relative border p-4 cursor-pointer transition-all duration-150 ${
                         isSelected
                           ? "border-[var(--foreground)] bg-[var(--card)] shadow-sm ring-1 ring-[var(--foreground)]"
-                          : "border-[var(--border-strong)] bg-[var(--background)] hover:border-[#8E887D]"
+                          : "border-[var(--border-strong)] bg-[var(--background)] hover:border-[var(--muted-foreground)]"
                       }`}
                     >
                       {/* Quiet Recommended Ribbon - Never size or border differences */}
@@ -520,7 +520,7 @@ export const ImpactSummaryPanel: React.FC<ImpactSummaryPanelProps> = ({
 
                       {/* Action Button inside card */}
                       <div className="mt-3 flex items-center justify-between pt-1">
-                        <div className="text-[10px] text-[#8E887D]">
+                        <div className="text-[10px] text-[var(--muted-foreground)]">
                           {isSelected ? "Selected for execution" : "Click to select"}
                         </div>
                         <button

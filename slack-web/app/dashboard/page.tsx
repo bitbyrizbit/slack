@@ -185,7 +185,7 @@ export default function DashboardPage() {
                   >
                     {currentUser.display_name}
                   </Link>
-                  <div className="text-[10px] text-[#8E887D] leading-tight">
+                  <div className="text-[10px] text-[var(--muted-foreground)] leading-tight">
                     {currentUser.email}
                   </div>
                 </div>
@@ -288,7 +288,7 @@ export default function DashboardPage() {
                         <h2 className="font-serif-heading text-lg font-bold text-[var(--foreground)] group-hover:text-[#2B5B84] transition-colors line-clamp-2">
                           {trip.name}
                         </h2>
-                        <div className="mt-1 flex items-center gap-2 text-[11px] text-[#8E887D]">
+                        <div className="mt-1 flex items-center gap-2 text-[11px] text-[var(--muted-foreground)]">
                           <Clock className="h-3 w-3" />
                           <span>Created {new Date(trip.created_at).toLocaleDateString()}</span>
                         </div>
@@ -303,7 +303,7 @@ export default function DashboardPage() {
                             size="md"
                             showLabel={true}
                           />
-                          <span className="mt-1 text-[9.5px] font-semibold text-[#8E887D]">
+                          <span className="mt-1 text-[9.5px] font-semibold text-[var(--muted-foreground)]">
                             Resilience
                           </span>
                         </div>

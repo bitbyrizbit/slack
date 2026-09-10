@@ -137,20 +137,20 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
         <div className="mt-2.5 pb-4 text-xs text-[var(--muted-foreground)]">
           <div className="font-semibold text-[var(--foreground)] text-sm">
             {formatTimeOnly(node.start_time)} - {formatTimeOnly(node.end_time)}
-            <span className="ml-2 font-normal text-[#8E887D]">({durationStr})</span>
+            <span className="ml-2 font-normal text-[var(--muted-foreground)]">({durationStr})</span>
           </div>
-          <div className="mt-0.5 text-[#8E887D]">{formatFullDate(node.start_time)}</div>
+          <div className="mt-0.5 text-[var(--muted-foreground)]">{formatFullDate(node.start_time)}</div>
         </div>
 
         {/* Labeled Section 1: Schedule and Location */}
         <div className="border-t border-[var(--border)] pt-3.5">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-[#8E887D] mb-2">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-2">
             Schedule and Location
           </div>
           <div className="space-y-1.5 text-xs text-[var(--foreground)]">
             {node.location && (
               <div className="flex items-start gap-2">
-                <MapPin className="h-3.5 w-3.5 shrink-0 text-[#8E887D] mt-0.5" />
+                <MapPin className="h-3.5 w-3.5 shrink-0 text-[var(--muted-foreground)] mt-0.5" />
                 <span>{node.location}</span>
               </div>
             )}
@@ -174,31 +174,31 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
 
         {/* Labeled Section 2: Vendor and Cost */}
         <div className="border-t border-[var(--border)] pt-3.5 mt-3.5">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-[#8E887D] mb-2">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-2">
             Vendor and Cost
           </div>
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div>
-              <span className="text-[#8E887D] block">Provider / Vendor</span>
+              <span className="text-[var(--muted-foreground)] block">Provider / Vendor</span>
               <span className="font-medium text-[var(--foreground)]">
                 {node.vendor || "Standard booking"}
               </span>
             </div>
             <div>
-              <span className="text-[#8E887D] block">Recorded Cost</span>
+              <span className="text-[var(--muted-foreground)] block">Recorded Cost</span>
               <span className="font-medium text-[var(--foreground)]">
                 {node.cost != null ? `$${node.cost.toFixed(2)}` : "Not specified"}
               </span>
             </div>
             {node.metadata?.flight_number && (
               <div className="col-span-2">
-                <span className="text-[#8E887D] block">Flight Identifier</span>
+                <span className="text-[var(--muted-foreground)] block">Flight Identifier</span>
                 <span className="font-medium text-[var(--foreground)]">{String(node.metadata.flight_number)}</span>
               </div>
             )}
             {node.metadata?.room_type && (
               <div className="col-span-2">
-                <span className="text-[#8E887D] block">Room Category</span>
+                <span className="text-[var(--muted-foreground)] block">Room Category</span>
                 <span className="font-medium text-[var(--foreground)]">{String(node.metadata.room_type)}</span>
               </div>
             )}
@@ -207,7 +207,7 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
 
         {/* Labeled Section 3: Cancellation Policy */}
         <div className="border-t border-[var(--border)] pt-3.5 mt-3.5">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-[#8E887D] mb-1.5">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-1.5">
             Cancellation Policy
           </div>
           <p className="text-xs text-[var(--muted-foreground)]">
@@ -218,7 +218,7 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
         {/* Labeled Section 4: Connections & Dependencies */}
         <div className="border-t border-[var(--border)] pt-3.5 mt-3.5">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-[#8E887D]">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
               Connections &amp; Dependencies
             </div>
             <button
@@ -282,7 +282,7 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
           {/* Upstream & Downstream list */}
           <div className="space-y-2 text-xs">
             {incomingEdges.length === 0 && outgoingEdges.length === 0 && (
-              <p className="text-xs text-[#8E887D] italic">
+              <p className="text-xs text-[var(--muted-foreground)] italic">
                 No active dependencies connected to this booking.
               </p>
             )}
@@ -296,7 +296,7 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
                   className={`p-2 bg-[var(--card)] ${style.borderStyle} flex items-center justify-between`}
                 >
                   <div>
-                    <div className="text-[11px] text-[#8E887D]">Preceding (Incoming):</div>
+                    <div className="text-[11px] text-[var(--muted-foreground)]">Preceding (Incoming):</div>
                     <div className="font-semibold text-[var(--foreground)]">{src?.title || "Booking"}</div>
                     <div className="text-[11px] text-[var(--muted-foreground)]">
                       Gap: {edge.actual_gap_minutes}m (Min: {edge.min_buffer_minutes}m)
@@ -335,7 +335,7 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
                   className={`p-2 bg-[var(--card)] ${style.borderStyle} flex items-center justify-between`}
                 >
                   <div>
-                    <div className="text-[11px] text-[#8E887D]">Downstream (Outgoing):</div>
+                    <div className="text-[11px] text-[var(--muted-foreground)]">Downstream (Outgoing):</div>
                     <div className="font-semibold text-[var(--foreground)]">{dest?.title || "Booking"}</div>
                     <div className="text-[11px] text-[var(--muted-foreground)]">
                       Gap: {edge.actual_gap_minutes}m (Min: {edge.min_buffer_minutes}m)
@@ -373,7 +373,7 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
         <div className="mb-4 grid grid-cols-2 gap-2 text-xs">
           {/* Upstream Slack Card */}
           <div className="border border-[var(--border-strong)] bg-[var(--background)] p-2.5">
-            <span className="text-[10px] text-[#8E887D] uppercase font-bold block mb-1">
+            <span className="text-[10px] text-[var(--muted-foreground)] uppercase font-bold block mb-1">
               Upstream Slack
             </span>
             {incomingEdges.length > 0 ? (
@@ -396,13 +396,13 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
                 })}
               </div>
             ) : (
-              <span className="text-[#8E887D] italic">No upstream dependency</span>
+              <span className="text-[var(--muted-foreground)] italic">No upstream dependency</span>
             )}
           </div>
 
           {/* Downstream Slack Card */}
           <div className="border border-[var(--border-strong)] bg-[var(--background)] p-2.5">
-            <span className="text-[10px] text-[#8E887D] uppercase font-bold block mb-1">
+            <span className="text-[10px] text-[var(--muted-foreground)] uppercase font-bold block mb-1">
               Downstream Slack
             </span>
             {outgoingEdges.length > 0 ? (
@@ -425,7 +425,7 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
                 })}
               </div>
             ) : (
-              <span className="text-[#8E887D] italic">No downstream dependency</span>
+              <span className="text-[var(--muted-foreground)] italic">No downstream dependency</span>
             )}
           </div>
         </div>

@@ -53,10 +53,10 @@ interface D3Link {
 const NODE_RADIUS = 30;
 
 const TYPE_COLORS: Record<string, { fill: string; stroke: string; label: string; text: string }> = {
-  flight: { fill: "#18181A", stroke: "none", label: "Flight", text: "#E6D5B8" },
-  hotel: { fill: "#2D3A31", stroke: "none", label: "Hotel", text: "#E6D5B8" },
-  transfer: { fill: "#E6D5B8", stroke: "none", label: "Transfer", text: "#18181A" },
-  activity: { fill: "#FFFFFF", stroke: "none", label: "Activity", text: "#18181A" },
+  flight: { fill: "var(--foreground)", stroke: "none", label: "Flight", text: "var(--foreground)" },
+  hotel: { fill: "#2D3A31", stroke: "none", label: "Hotel", text: "var(--foreground)" },
+  transfer: { fill: "var(--foreground)", stroke: "none", label: "Transfer", text: "var(--foreground)" },
+  activity: { fill: "#FFFFFF", stroke: "none", label: "Activity", text: "var(--foreground)" },
 };
 
 // Strict & Defensive Edge Style Resolver (guarantees safe slack >30m never renders as violated)
@@ -201,7 +201,7 @@ export const GraphView: React.FC<GraphViewProps> = ({
       <div className="absolute top-3 left-5 right-5 z-10 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
         {/* Day-Jump Navigation */}
         <div className="pointer-events-auto flex items-center gap-1.5 border border-[var(--border-strong)] bg-[var(--card)] px-2.5 py-1.5 text-xs">
-          <span className="text-[11px] font-semibold text-[#8E887D] mr-1">Timeline:</span>
+          <span className="text-[11px] font-semibold text-[var(--muted-foreground)] mr-1">Timeline:</span>
           <button
             onClick={handleResetView}
             className={`px-2 py-0.5 text-[11px] font-medium transition-colors ${
@@ -293,7 +293,7 @@ export const GraphView: React.FC<GraphViewProps> = ({
               {TYPE_COLORS[hoveredNode.node.type]?.label}
             </span>
             {hoveredNode.node.vendor && (
-              <span className="text-[11px] text-[#8E887D]">by {hoveredNode.node.vendor}</span>
+              <span className="text-[11px] text-[var(--muted-foreground)]">by {hoveredNode.node.vendor}</span>
             )}
           </div>
           <div className="font-serif-heading text-sm font-bold text-[var(--foreground)]">
@@ -301,7 +301,7 @@ export const GraphView: React.FC<GraphViewProps> = ({
           </div>
           <div className="mt-1.5 space-y-1 text-[var(--muted-foreground)] text-[11px]">
             <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3 text-[#8E887D]" />
+              <Clock className="h-3 w-3 text-[var(--muted-foreground)]" />
               <span>
                 {hoveredNode.node.start_time.split("T")[1]?.substring(0, 5)} -{" "}
                 {hoveredNode.node.end_time.split("T")[1]?.substring(0, 5)}
@@ -309,13 +309,13 @@ export const GraphView: React.FC<GraphViewProps> = ({
             </div>
             {hoveredNode.node.location && (
               <div className="flex items-center gap-1">
-                <MapPin className="h-3 w-3 text-[#8E887D]" />
+                <MapPin className="h-3 w-3 text-[var(--muted-foreground)]" />
                 <span className="truncate">{hoveredNode.node.location}</span>
               </div>
             )}
             {hoveredNode.node.cost != null && (
               <div className="flex items-center gap-1">
-                <DollarSign className="h-3 w-3 text-[#8E887D]" />
+                <DollarSign className="h-3 w-3 text-[var(--muted-foreground)]" />
                 <span>${hoveredNode.node.cost.toFixed(2)}</span>
               </div>
             )}
@@ -332,7 +332,7 @@ export const GraphView: React.FC<GraphViewProps> = ({
           <div className="font-serif-heading font-semibold text-[var(--foreground)]">
             Itinerary Graph Legend
           </div>
-          <button className="text-[#8E887D] hover:text-[var(--foreground)]" aria-label="Toggle legend">
+          <button className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]" aria-label="Toggle legend">
             {isLegendCollapsed ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </button>
         </div>
@@ -341,38 +341,38 @@ export const GraphView: React.FC<GraphViewProps> = ({
           <div className="p-3 pt-1 border-t border-[var(--border)] flex flex-col gap-2 text-[var(--muted-foreground)]">
             <div className="flex flex-wrap items-center gap-2.5">
               <div className="flex items-center gap-1.5">
-                <span className="flex h-4 w-4 items-center justify-center rounded-full border border-[#2B5B84] bg-[#EBF3F9]">
-                  <Plane className="h-2.5 w-2.5 text-[#2B5B84]" />
+                <span className="flex h-4 w-4 items-center justify-center bg-[#2D3A31]">
+                  <Plane className="h-2.5 w-2.5 text-white" />
                 </span>
                 <span>Flight</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="flex h-4 w-4 items-center justify-center rounded-full border border-[#885434] bg-[#FBF1E8]">
-                  <Bed className="h-2.5 w-2.5 text-[#885434]" />
+                <span className="flex h-4 w-4 items-center justify-center bg-[#C2A878]">
+                  <Bed className="h-2.5 w-2.5 text-[#1A1A1A]" />
                 </span>
                 <span>Hotel</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="flex h-4 w-4 items-center justify-center rounded-full border border-[#2D6A4F] bg-[#EDF7F2]">
-                  <Car className="h-2.5 w-2.5 text-[#2D6A4F]" />
+                <span className="flex h-4 w-4 items-center justify-center bg-[#E8F0E9] border border-[#A8C0A9]">
+                  <Car className="h-2.5 w-2.5 text-[#2D3A31]" />
                 </span>
                 <span>Transfer</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="flex h-4 w-4 items-center justify-center rounded-full border border-[#6D3A6D] bg-[#F7EEF6]">
-                  <MapPin className="h-2.5 w-2.5 text-[#6D3A6D]" />
+                <span className="flex h-4 w-4 items-center justify-center bg-[#F5F2ED] border border-[#B8B2A8]">
+                  <MapPin className="h-2.5 w-2.5 text-[var(--muted-foreground)]" />
                 </span>
                 <span>Activity</span>
               </div>
             </div>
             <div className="border-t border-[var(--border)] pt-2 flex flex-col gap-1.5">
               <div className="flex items-center gap-2">
-                <span className="inline-block h-1 w-5 bg-[#64748B]" />
-                <span className="text-[#334155] font-medium">Safe (&gt;30m slack)</span>
+                <span className="inline-block h-1 w-5 bg-[var(--border-strong)]" />
+                <span className="text-[var(--foreground)] font-medium">Safe (&gt;30m slack)</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="inline-block h-1.5 w-5 bg-[#C05621]" />
-                <span className="text-[#92400E] font-medium">Tight (0-30m buffer)</span>
+                <span className="text-[#C05621] font-medium">Tight (0-30m buffer)</span>
               </div>
               <div className="flex items-center gap-2">
                 <span

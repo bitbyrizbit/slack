@@ -166,7 +166,7 @@ export const TriggerDisruptionModal: React.FC<TriggerDisruptionModalProps> = ({
                 ⚠ This booking already has an active unresolved disruption. Resolve or reset it before triggering another.
               </div>
             )}
-            <p className="mt-1 text-[11px] text-[#8E887D]">
+            <p className="mt-1 text-[11px] text-[var(--muted-foreground)]">
               The engine will recompute downstream edges and ripple impact outward in BFS order.
             </p>
           </div>
@@ -225,7 +225,7 @@ export const TriggerDisruptionModal: React.FC<TriggerDisruptionModalProps> = ({
                   ))}
                 </div>
               </div>
-              <span className="mt-1 block text-[10px] text-[#8E887D]">
+              <span className="mt-1 block text-[10px] text-[var(--muted-foreground)]">
                 Derived timing: end time slips by {delayMinutes}m without altering original booking records.
               </span>
             </div>

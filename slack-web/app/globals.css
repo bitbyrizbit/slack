@@ -1,15 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #18181A;
-  --foreground: #E6D5B8;
-  --card: #222225;
-  --card-foreground: #E6D5B8;
-  --border: #3A3A3C;
-  --border-strong: #505055;
-  --muted: #2A2A2D;
-  --muted-foreground: #A1998A;
-  --accent: #C2A878;
+  /* Light theme — Cream / Light Green / Light Grey */
+  --background: #F5F2ED;       /* warm cream */
+  --foreground: #1A1A1A;       /* near-black text */
+  --card: #FFFFFF;             /* pure white cards */
+  --card-foreground: #1A1A1A;
+  --border: #DDD9D2;           /* soft warm grey border */
+  --border-strong: #B8B2A8;    /* stronger border */
+  --muted: #EDE9E3;            /* muted cream surface */
+  --muted-foreground: #6B6560; /* muted text */
+  --accent: #C2A878;           /* warm sand/gold accent kept */
+
+  /* Green surfaces */
+  --green-surface: #E8F0E9;    /* very light green */
+  --green-dark: #2D3A31;       /* dark green for logos/buttons */
 
   --font-heading: var(--font-heading), "Georgia", "Cambria", "Times New Roman", serif;
   --font-body: var(--font-body), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;

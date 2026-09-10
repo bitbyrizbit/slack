@@ -14,7 +14,7 @@ export default function SlackLogo({ className = "", italicText = false }: { clas
           animate={{ scaleX: 1 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         />
-        <span className={`relative z-10 text-4xl font-bold text-[#18181A] leading-none ${italicText ? "italic" : ""}`}>S</span>
+        <span className={`relative z-10 text-4xl font-bold text-[var(--foreground)] leading-none ${italicText ? "italic" : ""}`}>S</span>
       </div>
       
       {/* lack Box */}

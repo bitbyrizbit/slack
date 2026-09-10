@@ -108,11 +108,11 @@ export const ActivityFeedDrawer: React.FC<ActivityFeedDrawerProps> = ({
       {/* Feed Content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {isLoading && activities.length === 0 && (
-          <div className="py-8 text-center text-xs text-[#8E887D]">Loading activity history...</div>
+          <div className="py-8 text-center text-xs text-[var(--muted-foreground)]">Loading activity history...</div>
         )}
 
         {!isLoading && activities.length === 0 && (
-          <div className="py-8 text-center text-xs text-[#8E887D]">
+          <div className="py-8 text-center text-xs text-[var(--muted-foreground)]">
             No activity recorded yet for this trip.
           </div>
         )}
@@ -128,7 +128,7 @@ export const ActivityFeedDrawer: React.FC<ActivityFeedDrawerProps> = ({
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-1 mb-0.5">
                 <span className="font-bold text-[var(--foreground)] truncate">{item.actor_name}</span>
-                <span className="text-[10px] font-mono text-[#8E887D] shrink-0">
+                <span className="text-[10px] font-mono text-[var(--muted-foreground)] shrink-0">
                   {formatRelativeTime(item.created_at)}
                 </span>
               </div>
@@ -140,7 +140,7 @@ export const ActivityFeedDrawer: React.FC<ActivityFeedDrawerProps> = ({
 
       {/* Footer */}
       <div className="border-t border-[var(--border)] p-3 bg-[var(--background)] text-center">
-        <span className="text-[10px] text-[#8E887D] flex items-center justify-center gap-1">
+        <span className="text-[10px] text-[var(--muted-foreground)] flex items-center justify-center gap-1">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#059669] animate-pulse" />
           Live event synchronization active
         </span>

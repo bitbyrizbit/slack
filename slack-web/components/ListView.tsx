@@ -112,27 +112,27 @@ export const ListView: React.FC<ListViewProps> = ({
                         {node.title}
                       </h3>
                       {node.vendor && (
-                        <span className="text-xs text-[#8E887D]">by {node.vendor}</span>
+                        <span className="text-xs text-[var(--muted-foreground)]">by {node.vendor}</span>
                       )}
                     </div>
 
                     {/* Time & Location */}
                     <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-[var(--muted-foreground)]">
                       <div className="flex items-center gap-1">
-                        <Clock className="h-3.5 w-3.5 text-[#8E887D]" />
+                        <Clock className="h-3.5 w-3.5 text-[var(--muted-foreground)]" />
                         <span>
                           {formatDateTime(node.start_time)} - {formatDateTime(node.end_time)}
                         </span>
                       </div>
                       {node.location && (
                         <div className="flex items-center gap-1">
-                          <MapPin className="h-3.5 w-3.5 text-[#8E887D]" />
+                          <MapPin className="h-3.5 w-3.5 text-[var(--muted-foreground)]" />
                           <span>{node.location}</span>
                         </div>
                       )}
                       {node.cost != null && (
                         <div className="flex items-center gap-1">
-                          <DollarSign className="h-3.5 w-3.5 text-[#8E887D]" />
+                          <DollarSign className="h-3.5 w-3.5 text-[var(--muted-foreground)]" />
                           <span>${node.cost.toFixed(2)}</span>
                         </div>
                       )}
@@ -162,7 +162,7 @@ export const ListView: React.FC<ListViewProps> = ({
               {/* Outgoing edges / buffer to downstream bookings */}
               {outgoingEdges.length > 0 && (
                 <div className="mt-3 border-t border-[var(--muted)] pt-2.5">
-                  <div className="text-[11px] font-medium text-[#8E887D] mb-1.5">
+                  <div className="text-[11px] font-medium text-[var(--muted-foreground)] mb-1.5">
                     Downstream Connections &amp; Slack:
                   </div>
                   <div className="flex flex-wrap gap-2">

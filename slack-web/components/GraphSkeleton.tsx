@@ -19,7 +19,7 @@ export const GraphSkeleton: React.FC = () => {
         </svg>
       </div>
 
-      <div className="absolute top-6 left-6 text-xs text-[#8E887D] font-mono skeleton-pulse">
+      <div className="absolute top-6 left-6 text-xs text-[var(--muted-foreground)] font-mono skeleton-pulse">
         Computing NetworkX DAG & edge slack...
       </div>
 

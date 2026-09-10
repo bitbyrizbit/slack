@@ -114,7 +114,7 @@ export const DependencyModal: React.FC<DependencyModalProps> = ({
             </select>
           </div>
 
-          <div className="flex justify-center text-[#8E887D]">
+          <div className="flex justify-center text-[var(--muted-foreground)]">
             <ArrowRight className="h-4 w-4" />
           </div>
 
@@ -157,7 +157,7 @@ export const DependencyModal: React.FC<DependencyModalProps> = ({
               className="w-full border border-[var(--border-strong)] p-2 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
               required
             />
-            <span className="text-[10px] text-[#8E887D]">
+            <span className="text-[10px] text-[var(--muted-foreground)]">
               The slack value on the edge will be (actual gap minus this buffer).
             </span>
           </div>

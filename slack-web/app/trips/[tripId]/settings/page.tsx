@@ -251,7 +251,7 @@ export default function TripSettingsPage() {
             </div>
 
             <div className="flex items-center justify-between pt-2">
-              <div className="text-[11px] text-[#8E887D] flex gap-4">
+              <div className="text-[11px] text-[var(--muted-foreground)] flex gap-4">
                 <span>Trip ID: <code className="bg-[var(--muted)] px-1 py-0.5 text-[var(--foreground)] font-mono">{tripId}</code></span>
                 {trip?.created_at && (
                   <span>Created: {new Date(trip.created_at).toLocaleDateString()}</span>
@@ -283,7 +283,7 @@ export default function TripSettingsPage() {
           {/* Members List */}
           <div className="divide-y divide-[var(--border)] border border-[var(--border)] mb-6">
             {members.length === 0 ? (
-              <div className="p-4 text-xs text-[#8E887D] text-center">
+              <div className="p-4 text-xs text-[var(--muted-foreground)] text-center">
                 No external collaborators invited yet.
               </div>
             ) : (
@@ -310,7 +310,7 @@ export default function TripSettingsPage() {
                     {member.role !== "owner" && (
                       <button
                         onClick={() => handleRemoveMember(member.id, member.name)}
-                        className="p-1 text-[#8E887D] hover:text-[var(--foreground)] transition-colors"
+                        className="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
                         title="Remove collaborator"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
